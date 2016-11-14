@@ -20,7 +20,7 @@
   This game will have a title at the top with the game residing at the center,
   taking up most of the window. At the right there will be an 'about' modal and links to my various pages.
 
-  ![wireframes](https://github.com/calebomusic/Garden-of-Forking-Paths/blob/master/docs/mazes-wireframes.html)
+  ![wireframes](https://github.com/calebomusic/Garden-of-Forking-Paths/blob/master/docs/mazes-wireframes.png)
 
 ### ARCHITECTURE AND TECHNOLOGIES
 

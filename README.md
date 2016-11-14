@@ -39,11 +39,11 @@ Cells will have neighbors which they may or may not be linked too.
 
 `cell.js`: this script will hold the logic for the cells that make up the grid. It will setup up a basic grid.
 
-'maze.js': This script will make a maze from a basic grid. This will be done by toggling the linked properties of the various cells.
+`maze.js`: This script will make a maze from a basic grid. This will be done by toggling the linked properties of the various cells.
 
-'user.js': This script will house the user logic, in particular, manage user input.
+`user.js`: This script will house the user logic, in particular, manage user input.
 
-'game.js': This script will house the game logic.
+`game.js`: This script will house the game logic.
 
 
 ### IMPLEMENTATION TIMELINES

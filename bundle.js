@@ -64,7 +64,7 @@
 	  // new Stage(game, ctx).start();
 	
 	  //TODO: for testing
-	  var g = new Grid(5, 5);
+	  var g = new Grid(3, 3);
 	  var m = new Maze(g);
 	  m.growingTree();
 	  g.draw(ctx);
@@ -158,13 +158,13 @@
 	    value: function configureWalls() {
 	      var walls = [];
 	
-	      for (var i = 0; i < this.cells.length; i++) {
+	      this.toString();
+	
+	      this.cells.forEach(function (row, i) {
 	        var top = [];
 	        var bottom = [];
 	
-	        for (var j = 0; j < this.cells.length; j++) {
-	          var cell = this.cells[i][j];
-	
+	        row.forEach(function (cell, j) {
 	          if (cell.isLinked(cell.east)) {
 	            top.push(new Wall(true, true, [(i + 1) * 50, (j + 1) * 50]));
 	          } else {
@@ -176,13 +176,60 @@
 	          } else {
 	            bottom.push(new Wall(false, false, [i * 50, (j + 2) * 50]));
 	          }
-	        }
+	        });
 	
 	        walls.push(top);
 	        walls.push(bottom);
-	      }
+	      });
+	
+	      // for (var i = 0; i < this.cells.length; i++) {
+	      //   let top = [];
+	      //   let bottom = [];
+	      //
+	      //   for (var j = 0; j < this.cells.length; j++) {
+	      //     let cell = this.cells[i][j];
+	      //
+	      //     if (cell.isLinked(cell.east)) {
+	      //       top.push(new Wall(true, true, [(i + 1) * 50, (j + 1) * 50]));
+	      //     } else {
+	      //       top.push(new Wall(false, true, [(i + 1) * 50, (j + 1) * 50]));
+	      //     }
+	      //
+	      //     if (cell.isLinked(cell.south)) {
+	      //       bottom.push(new Wall(true, false, [i * 50, (j + 2) * 50]));
+	      //     } else {
+	      //       bottom.push(new Wall(false, false, [i * 50, (j + 2) * 50]));
+	      //     }
+	      //   }
+	      //
+	      //   walls.push(top);
+	      //   walls.push(bottom);
+	      // }
 	
 	      this.walls = walls;
+	    }
+	  }, {
+	    key: 'toString',
+	    value: function toString() {
+	      var output = void 0;
+	      this.cells.forEach(function (row) {
+	        var top = "\n|";
+	        var bottom = "+";
+	
+	        row.forEach(function (cell) {
+	          var body = '   ';
+	          var east_boundary = cell.isLinked(cell.east) ? ' ' : "|";
+	
+	          top = top + body + east_boundary;
+	
+	          var south_boundary = cell.isLinked(cell.south) ? "   " : "---";
+	          bottom = bottom + south_boundary + '+';
+	        });
+	        output = output + top + '\n';
+	        output = output + bottom + '\n';
+	      });
+	
+	      console.log(output);
 	    }
 	  }, {
 	    key: 'draw',
@@ -259,10 +306,10 @@
 	    this.links = {};
 	    this.pos = [];
 	
-	    this.link.bind(this);
-	    this.findDir.bind(this);
-	    this.unlink.bind(this);
-	    this.isLinked.bind(this);
+	    // this.link.bind(this);
+	    // this.findDir.bind(this);
+	    // this.unlink.bind(this);
+	    // this.isLinked.bind(this);
 	  }
 	
 	  _createClass(Cell, [{
@@ -314,10 +361,6 @@
 	      if (!cell) {
 	        return undefined;
 	      }
-	
-	      // if (Object.keys(this.links).length > 0) {
-	      //   // debugger
-	      // }
 	
 	      var linkedDirs = Object.keys(this.links);
 	
@@ -469,7 +512,9 @@
 	      var cells = [];
 	      var visited = [];
 	
-	      cells.push(this.randomCell());
+	      var startingCell = this.randomCell();
+	      cells.push(startingCell);
+	      visited.push(startingCell);
 	
 	      while (cells.length > 0) {
 	        var index = cells.length - 1;
@@ -479,7 +524,7 @@
 	            x = _currentPos[0],
 	            y = _currentPos[1];
 	
-	        console.log(currentPos);
+	        // console.log(currentPos);
 	
 	        var newPos = this.growingTreeStep(currentPos, visited);
 	
@@ -492,6 +537,7 @@
 	          cells.push([nx, ny]);
 	          visited.push([nx, ny]);
 	        } else {
+	          // console.log('popped');
 	          cells.pop();
 	        }
 	      }

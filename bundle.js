@@ -56,15 +56,15 @@
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var canvasEl = document.getElementsByTagName("canvas")[0];
-	  canvasEl.width = 1000;
-	  canvasEl.height = 1000;
+	  canvasEl.width = 1500;
+	  canvasEl.height = 1500;
 	
 	  var ctx = canvasEl.getContext("2d");
 	  // const game = new Game();
 	  // new Stage(game, ctx).start();
 	
 	  //TODO: for testing
-	  var g = new Grid(3, 3);
+	  var g = new Grid(25, 25);
 	  var m = new Maze(g);
 	  m.growingTree();
 	  g.draw(ctx);
@@ -113,6 +113,7 @@
 	    this.cells = this.prepareGrid();
 	    this.configureCells();
 	    this.configureWalls();
+	    this.configureWalls = this.configureWalls.bind(this);
 	  }
 	
 	  _createClass(Grid, [{
@@ -165,46 +166,23 @@
 	        var bottom = [];
 	
 	        row.forEach(function (cell, j) {
+	          // Mess w/ coords here.
 	          if (cell.isLinked(cell.east)) {
-	            top.push(new Wall(true, true, [(i + 1) * 50, (j + 1) * 50]));
+	            top.push(new Wall(true, true, [(j + 1) * 50, (i + 1) * 50]));
 	          } else {
-	            top.push(new Wall(false, true, [(i + 1) * 50, (j + 1) * 50]));
+	            top.push(new Wall(false, true, [(j + 1) * 50, (i + 1) * 50]));
 	          }
 	
 	          if (cell.isLinked(cell.south)) {
-	            bottom.push(new Wall(true, false, [i * 50, (j + 2) * 50]));
+	            bottom.push(new Wall(true, false, [j * 50, (i + 2) * 50]));
 	          } else {
-	            bottom.push(new Wall(false, false, [i * 50, (j + 2) * 50]));
+	            bottom.push(new Wall(false, false, [j * 50, (i + 2) * 50]));
 	          }
 	        });
 	
 	        walls.push(top);
 	        walls.push(bottom);
 	      });
-	
-	      // for (var i = 0; i < this.cells.length; i++) {
-	      //   let top = [];
-	      //   let bottom = [];
-	      //
-	      //   for (var j = 0; j < this.cells.length; j++) {
-	      //     let cell = this.cells[i][j];
-	      //
-	      //     if (cell.isLinked(cell.east)) {
-	      //       top.push(new Wall(true, true, [(i + 1) * 50, (j + 1) * 50]));
-	      //     } else {
-	      //       top.push(new Wall(false, true, [(i + 1) * 50, (j + 1) * 50]));
-	      //     }
-	      //
-	      //     if (cell.isLinked(cell.south)) {
-	      //       bottom.push(new Wall(true, false, [i * 50, (j + 2) * 50]));
-	      //     } else {
-	      //       bottom.push(new Wall(false, false, [i * 50, (j + 2) * 50]));
-	      //     }
-	      //   }
-	      //
-	      //   walls.push(top);
-	      //   walls.push(bottom);
-	      // }
 	
 	      this.walls = walls;
 	    }

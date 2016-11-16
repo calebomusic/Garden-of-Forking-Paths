@@ -56,8 +56,8 @@
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var canvasEl = document.getElementsByTagName("canvas")[0];
-	  canvasEl.width = 1500;
-	  canvasEl.height = 1500;
+	  canvasEl.width = 900;
+	  canvasEl.height = 950;
 	
 	  var ctx = canvasEl.getContext("2d");
 	  var game = new Game();
@@ -89,7 +89,7 @@
 	  function Game() {
 	    _classCallCheck(this, Game);
 	
-	    this.maze = new Maze(25, 25);
+	    this.maze = new Maze(20, 20);
 	    this.maze.growingTree();
 	    this.player = new Player();
 	  }
@@ -103,12 +103,26 @@
 	  }, {
 	    key: 'step',
 	    value: function step(timeDelta) {
+	      this.checkCollisions();
 	      this.movePlayer(timeDelta);
 	    }
 	  }, {
 	    key: 'movePlayer',
 	    value: function movePlayer(delta) {
 	      this.player.move(delta);
+	    }
+	  }, {
+	    key: 'checkCollisions',
+	    value: function checkCollisions() {
+	      var walls = this.maze.grid.walls.reduce(function (a, b) {
+	        return a.concat(b);
+	      });
+	
+	      for (var i = 0; i < walls.length; i++) {
+	        if (this.player.checkCollision(walls[i])) {
+	          return;
+	        }
+	      }
 	    }
 	  }]);
 	
@@ -325,15 +339,15 @@
 	
 	        row.forEach(function (cell, j) {
 	          if (cell.isLinked(cell.east)) {
-	            top.push(new Wall(true, true, [(j + 1) * 50, (i + 1) * 50]));
+	            // top.push(new Wall(true, true, [ (j + 1) * 32, (i + 1) * 32 ]));
 	          } else {
-	            top.push(new Wall(false, true, [(j + 1) * 50, (i + 1) * 50]));
+	            top.push(new Wall(false, true, [(j + 1) * 32, (i + 1) * 32]));
 	          }
 	
 	          if (cell.isLinked(cell.south)) {
-	            bottom.push(new Wall(true, false, [j * 50, (i + 2) * 50]));
+	            // bottom.push(new Wall(true, false, [(j) * 32, (i + 2) * 32]));
 	          } else {
-	            bottom.push(new Wall(false, false, [j * 50, (i + 2) * 50]));
+	            bottom.push(new Wall(false, false, [j * 32, (i + 2) * 32]));
 	          }
 	        });
 	
@@ -17658,12 +17672,13 @@
 	}
 	
 	var Wall = function () {
-	  function Wall(open, vertical, pos) {
+	  function Wall(open, vertical, startPos) {
 	    _classCallCheck(this, Wall);
 	
 	    this.open = open;
 	    this.vertical = vertical;
-	    this.pos = pos;
+	    this.startPos = startPos;
+	    this.endPos = startPos;
 	  }
 	
 	  _createClass(Wall, [{
@@ -17676,9 +17691,11 @@
 	      }
 	
 	      if (this.vertical) {
-	        ctx.fillRect(this.pos[0], this.pos[1], 2, 50);
+	        ctx.fillRect(this.startPos[0], this.startPos[1], 2, 32);
+	        this.endPos = [this.startPos[0] + 2, this.startPos[1] + 32];
 	      } else {
-	        ctx.fillRect(this.pos[0], this.pos[1], 50, 2);
+	        ctx.fillRect(this.startPos[0], this.startPos[1], 32, 2);
+	        this.endPos = [this.startPos[0] + 32, this.startPos[1] + 2];
 	      }
 	    }
 	  }]);
@@ -17699,10 +17716,10 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var MOVES = {
-	  "w": [0, -.5],
-	  "a": [-.5, 0],
-	  "s": [0, .5],
-	  "d": [.5, 0]
+	  "w": [0, -.1],
+	  "a": [-.1, 0],
+	  "s": [0, .1],
+	  "d": [.1, 0]
 	};
 	
 	var Stage = function () {
@@ -17749,6 +17766,7 @@
 	  }, {
 	    key: "draw",
 	    value: function draw() {
+	      this.ctx.clearRect(0, 0, 1500, 1500);
 	      this.game.draw(this.ctx);
 	    }
 	  }]);
@@ -17760,21 +17778,26 @@
 
 /***/ },
 /* 9 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
+	
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Util = __webpack_require__(10);
 	
 	var Player = function () {
 	  function Player() {
 	    _classCallCheck(this, Player);
 	
 	    this.color = '#74e43c';
-	    this.pos = [0, 0];
+	    this.pos = [25, 25];
 	    this.vel = [0, 0];
+	    this.radius = 7;
 	  }
 	
 	  _createClass(Player, [{
@@ -17783,7 +17806,7 @@
 	      ctx.fillStyle = this.color;
 	
 	      ctx.beginPath();
-	      ctx.arc(this.pos[0], this.pos[1], 7.5, 0, 2 * Math.PI, true);
+	      ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, true);
 	      ctx.fill();
 	    }
 	  }, {
@@ -17799,15 +17822,49 @@
 	          offsetX = this.vel[0] * velocityScale,
 	          offsetY = this.vel[1] * velocityScale;
 	
-	      this.pos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
+	      var newPos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
+	
+	      if (this.inBounds(newPos)) {
+	        this.pos = newPos;
+	      } else {
+	        this.vel = [0, 0];
+	        this.pos = [this.pos[0] - offsetX * 2, this.pos[1] - offsetY * 2];
+	      }
 	
 	      // if (this.game.isOutOfBounds(this.pos)) {
 	      //   this.vel = [0, 0]
 	      // }
 	    }
 	  }, {
+	    key: 'inBounds',
+	    value: function inBounds(pos) {
+	      var _pos = _slicedToArray(pos, 2),
+	          x = _pos[0],
+	          y = _pos[1];
+	
+	      return x >= 4 && x < 650 && y >= 4 && y <= 700;
+	    }
+	  }, {
 	    key: 'isOutOfBounds',
 	    value: function isOutOfBounds() {}
+	  }, {
+	    key: 'checkCollision',
+	    value: function checkCollision(wall) {
+	      var startPointDist = Util.dist(wall.startPos, this.pos);
+	      var endPointDist = Util.dist(wall.endPos, this.pos);
+	
+	      if (startPointDist < this.radius || endPointDist < this.radius) {
+	        this.handleCollision();
+	        return true;
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: 'handleCollision',
+	    value: function handleCollision() {
+	      this.vel = [0, 0];
+	    }
 	  }]);
 	
 	  return Player;
@@ -17816,6 +17873,21 @@
 	module.exports = Player;
 	
 	var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var Util = {
+	  // FInd distance between two points
+	  dist: function dist(pos1, pos2) {
+	    return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
+	  }
+	};
+	
+	module.exports = Util;
 
 /***/ }
 /******/ ]);

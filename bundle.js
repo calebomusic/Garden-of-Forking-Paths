@@ -83,6 +83,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Maze = __webpack_require__(2);
+	var Player = __webpack_require__(9);
 	
 	var Game = function () {
 	  function Game() {
@@ -90,12 +91,24 @@
 	
 	    this.maze = new Maze(25, 25);
 	    this.maze.growingTree();
+	    this.player = new Player();
 	  }
 	
 	  _createClass(Game, [{
 	    key: 'draw',
 	    value: function draw(ctx) {
 	      this.maze.grid.draw(ctx);
+	      this.player.draw(ctx);
+	    }
+	  }, {
+	    key: 'step',
+	    value: function step(timeDelta) {
+	      this.movePlayer(timeDelta);
+	    }
+	  }, {
+	    key: 'movePlayer',
+	    value: function movePlayer(delta) {
+	      this.player.move(delta);
 	    }
 	  }]);
 	
@@ -17677,7 +17690,7 @@
 
 /***/ },
 /* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	"use strict";
 	
@@ -17685,13 +17698,11 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var Player = __webpack_require__(9);
-	
 	var MOVES = {
-	  "w": [0, -1],
-	  "a": [-1, 0],
-	  "s": [0, 1],
-	  "d": [1, 0]
+	  "w": [0, -.5],
+	  "a": [-.5, 0],
+	  "s": [0, .5],
+	  "d": [.5, 0]
 	};
 	
 	var Stage = function () {
@@ -17700,8 +17711,7 @@
 	
 	    this.game = game;
 	    this.ctx = ctx;
-	
-	    this.player = new Player();
+	    this.player = this.game.player;
 	  }
 	
 	  _createClass(Stage, [{
@@ -17727,11 +17737,11 @@
 	  }, {
 	    key: "animate",
 	    value: function animate(time) {
-	      // const timeDelta = time - this.lastTime;
+	      var timeDelta = time - this.lastTime;
 	
-	      // this.game.step(timeDelta);
+	      this.game.step(timeDelta);
 	      this.draw();
-	      // this.lastTime = time;
+	      this.lastTime = time;
 	
 	      //every call to animate requests causes another call to animate
 	      requestAnimationFrame(this.animate.bind(this));
@@ -17740,7 +17750,6 @@
 	    key: "draw",
 	    value: function draw() {
 	      this.game.draw(this.ctx);
-	      this.player.draw(this.ctx);
 	    }
 	  }]);
 	
@@ -17765,25 +17774,48 @@
 	
 	    this.color = '#74e43c';
 	    this.pos = [0, 0];
+	    this.vel = [0, 0];
 	  }
 	
 	  _createClass(Player, [{
 	    key: 'draw',
 	    value: function draw(ctx) {
-	      //   ctx.fillStyle = this.color;
-	      //
-	      //   ctx.beginPath();
-	      //   ctx.arc(
-	      //     this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, true
-	      //   );
-	      //   ctx.fill();
+	      ctx.fillStyle = this.color;
+	
+	      ctx.beginPath();
+	      ctx.arc(this.pos[0], this.pos[1], 7.5, 0, 2 * Math.PI, true);
+	      ctx.fill();
 	    }
+	  }, {
+	    key: 'power',
+	    value: function power(impulse) {
+	      this.vel[0] += impulse[0];
+	      this.vel[1] += impulse[1];
+	    }
+	  }, {
+	    key: 'move',
+	    value: function move(timeDelta) {
+	      var velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
+	          offsetX = this.vel[0] * velocityScale,
+	          offsetY = this.vel[1] * velocityScale;
+	
+	      this.pos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
+	
+	      // if (this.game.isOutOfBounds(this.pos)) {
+	      //   this.vel = [0, 0]
+	      // }
+	    }
+	  }, {
+	    key: 'isOutOfBounds',
+	    value: function isOutOfBounds() {}
 	  }]);
 	
 	  return Player;
 	}();
 	
 	module.exports = Player;
+	
+	var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 
 /***/ }
 /******/ ]);

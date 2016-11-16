@@ -103,8 +103,8 @@
 	  }, {
 	    key: 'step',
 	    value: function step(timeDelta) {
-	      this.checkCollisions();
 	      this.movePlayer(timeDelta);
+	      this.checkCollisions();
 	    }
 	  }, {
 	    key: 'movePlayer',
@@ -17673,12 +17673,19 @@
 	
 	var Wall = function () {
 	  function Wall(open, vertical, startPos) {
+	    var _this = this;
+	
 	    _classCallCheck(this, Wall);
 	
 	    this.open = open;
 	    this.vertical = vertical;
 	    this.startPos = startPos;
 	    this.endPos = startPos;
+	    this.color = randomColor();
+	
+	    setInterval(function () {
+	      return _this.color = randomColor();
+	    }, (Math.random() + .1) * 5000);
 	  }
 	
 	  _createClass(Wall, [{
@@ -17687,7 +17694,7 @@
 	      if (this.open) {
 	        ctx.fillStyle = "white";
 	      } else {
-	        ctx.fillStyle = 'black';
+	        ctx.fillStyle = this.color;
 	      }
 	
 	      if (this.vertical) {
@@ -17716,10 +17723,10 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var MOVES = {
-	  "w": [0, -.1],
-	  "a": [-.1, 0],
-	  "s": [0, .1],
-	  "d": [.1, 0]
+	  "w": [0, -.5],
+	  "a": [-.5, 0],
+	  "s": [0, .5],
+	  "d": [.5, 0]
 	};
 	
 	var Stage = function () {
@@ -17780,7 +17787,7 @@
 /* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 	
@@ -17790,18 +17797,35 @@
 	
 	var Util = __webpack_require__(10);
 	
+	function randomColor() {
+	  var hexDigits = "0123456789ABCDEF";
+	
+	  var color = "#";
+	  for (var i = 0; i < 3; i++) {
+	    color += hexDigits[Math.floor(Math.random() * 16)];
+	  }
+	
+	  return color;
+	}
+	
 	var Player = function () {
 	  function Player() {
+	    var _this = this;
+	
 	    _classCallCheck(this, Player);
 	
-	    this.color = '#74e43c';
+	    this.color = randomColor();
 	    this.pos = [25, 25];
 	    this.vel = [0, 0];
 	    this.radius = 7;
+	
+	    setInterval(function () {
+	      return _this.color = randomColor();
+	    }, 5000);
 	  }
 	
 	  _createClass(Player, [{
-	    key: 'draw',
+	    key: "draw",
 	    value: function draw(ctx) {
 	      ctx.fillStyle = this.color;
 	
@@ -17810,13 +17834,13 @@
 	      ctx.fill();
 	    }
 	  }, {
-	    key: 'power',
+	    key: "power",
 	    value: function power(impulse) {
 	      this.vel[0] += impulse[0];
 	      this.vel[1] += impulse[1];
 	    }
 	  }, {
-	    key: 'move',
+	    key: "move",
 	    value: function move(timeDelta) {
 	      var velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
 	          offsetX = this.vel[0] * velocityScale,
@@ -17824,11 +17848,12 @@
 	
 	      var newPos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
 	
-	      if (this.inBounds(newPos)) {
+	      if (this.inBounds(newPos) && !this.collided) {
 	        this.pos = newPos;
 	      } else {
-	        this.vel = [0, 0];
+	        this.vel = [this.vel[0] - offsetX, this.vel[1] - offsetY];
 	        this.pos = [this.pos[0] - offsetX * 2, this.pos[1] - offsetY * 2];
+	        this.collided = false;
 	      }
 	
 	      // if (this.game.isOutOfBounds(this.pos)) {
@@ -17836,7 +17861,7 @@
 	      // }
 	    }
 	  }, {
-	    key: 'inBounds',
+	    key: "inBounds",
 	    value: function inBounds(pos) {
 	      var _pos = _slicedToArray(pos, 2),
 	          x = _pos[0],
@@ -17845,23 +17870,25 @@
 	      return x >= 4 && x < 650 && y >= 4 && y <= 700;
 	    }
 	  }, {
-	    key: 'isOutOfBounds',
+	    key: "isOutOfBounds",
 	    value: function isOutOfBounds() {}
 	  }, {
-	    key: 'checkCollision',
+	    key: "checkCollision",
 	    value: function checkCollision(wall) {
 	      var startPointDist = Util.dist(wall.startPos, this.pos);
 	      var endPointDist = Util.dist(wall.endPos, this.pos);
 	
-	      if (startPointDist < this.radius || endPointDist < this.radius) {
-	        this.handleCollision();
-	        return true;
+	      var collision = Util.checkCollisionWithLineIntercepts(this, wall.startPos, wall.endPos);
+	
+	      if (collision) {
+	        this.collided = true;
+	        // this.handleCollision();
 	      } else {
 	        return false;
 	      }
 	    }
 	  }, {
-	    key: 'handleCollision',
+	    key: "handleCollision",
 	    value: function handleCollision() {
 	      this.vel = [0, 0];
 	    }
@@ -17876,14 +17903,72 @@
 
 /***/ },
 /* 10 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
+	
+	var _lodash = __webpack_require__(5);
 	
 	var Util = {
 	  // FInd distance between two points
 	  dist: function dist(pos1, pos2) {
 	    return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
+	  },
+	
+	
+	  // TODO: improve variable naming
+	  checkCollisionWithLineIntercepts: function checkCollisionWithLineIntercepts(circle, startPos, endPos) {
+	    var a = void 0,
+	        b = void 0,
+	        c = void 0,
+	        d = void 0,
+	        u1 = void 0,
+	        u2 = void 0,
+	        ret = void 0,
+	        retP1 = void 0,
+	        retP2 = void 0,
+	        v1 = void 0,
+	        v2 = void 0;
+	    v1 = {};
+	    v2 = {};
+	    v1.x = endPos[0] - startPos[0];
+	    v1.y = endPos[1] - startPos[1];
+	    v2.x = startPos[0] - circle.pos[0];
+	    v2.y = startPos[1] - circle.pos[1];
+	    b = v1.x * v2.x + v1.y * v2.y;
+	    c = 2 * (v1.x * v1.x + v1.y * v1.y);
+	    b *= -2;
+	    d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
+	
+	    if (isNaN(d)) {
+	      // no intercept
+	      return false;
+	    }
+	
+	    u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
+	    u2 = (b + d) / c;
+	    retP1 = {}; // return points
+	    retP2 = {};
+	    ret = []; // return array
+	
+	    if (u1 <= 1 && u1 >= 0) {
+	      // add point if on the line segment
+	      retP1.x = startPos[0] + v1.x * u1;
+	      retP1.y = startPos[1] + v1.y * u1;
+	      ret[0] = retP1;
+	    }
+	    if (u2 <= 1 && u2 >= 0) {
+	      // second add point if on the line segment
+	      retP2.x = startPos[0] + v1.x * u2;
+	      retP2.y = startPos[0].y + v1.y * u2;
+	      ret[ret.length] = retP2;
+	    }
+	
+	    if (ret.length === 0) {
+	      return false;
+	    } else {
+	      return true;
+	    }
 	  }
 	};
 	

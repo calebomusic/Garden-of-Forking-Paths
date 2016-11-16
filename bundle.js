@@ -47,12 +47,12 @@
 	"use strict";
 	
 	var Game = __webpack_require__(1);
-	var Stage = __webpack_require__(5);
+	var Stage = __webpack_require__(8);
 	
 	// TODO: for testing
-	var Grid = __webpack_require__(2);
-	var Wall = __webpack_require__(4);
-	var Maze = __webpack_require__(6);
+	var Grid = __webpack_require__(3);
+	var Wall = __webpack_require__(7);
+	var Maze = __webpack_require__(2);
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var canvasEl = document.getElementsByTagName("canvas")[0];
@@ -60,15 +60,14 @@
 	  canvasEl.height = 1500;
 	
 	  var ctx = canvasEl.getContext("2d");
-	  // const game = new Game();
-	  // new Stage(game, ctx).start();
+	  var game = new Game();
+	  new Stage(game, ctx).start();
 	
 	  //TODO: for testing
-	  var g = new Grid(25, 25);
-	  var m = new Maze(g);
-	  m.growingTree();
-	  g.draw(ctx);
-	  window.g = g;
+	  // let m = new Maze(25, 25);
+	  // m.growingTree();
+	  // m.grid.draw(ctx);
+	  // window.g = g;
 	});
 	
 	window.grid = Grid;
@@ -79,20 +78,166 @@
 
 	'use strict';
 	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var Grid = __webpack_require__(2);
-	// const Maze = require('/.maze');
+	var Maze = __webpack_require__(2);
 	
-	var Game = function Game(player) {
-	  _classCallCheck(this, Game);
+	var Game = function () {
+	  function Game() {
+	    _classCallCheck(this, Game);
 	
-	  this.grid = new Grid(20, 20);
-	  this.player = player;
-	};
+	    this.maze = new Maze(25, 25);
+	    this.maze.growingTree();
+	  }
+	
+	  _createClass(Game, [{
+	    key: 'draw',
+	    value: function draw(ctx) {
+	      this.maze.grid.draw(ctx);
+	    }
+	  }]);
+	
+	  return Game;
+	}();
+	
+	module.exports = Game;
 
 /***/ },
 /* 2 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Grid = __webpack_require__(3);
+	
+	var DX = { E: 1, W: -1, N: 0, S: 0 };
+	var DY = { E: 0, W: 0, N: -1, S: 1 };
+	
+	function shuffle(array) {
+	  for (var i = array.length; i; i--) {
+	    var j = Math.floor(Math.random() * i);
+	    var _ref = [array[j], array[i - 1]];
+	    array[i - 1] = _ref[0];
+	    array[j] = _ref[1];
+	  }
+	
+	  return array;
+	}
+	
+	var Maze = function () {
+	  function Maze(row, col) {
+	    _classCallCheck(this, Maze);
+	
+	    this.grid = new Grid(row, col);
+	  }
+	
+	  _createClass(Maze, [{
+	    key: 'growingTree',
+	    value: function growingTree() {
+	      var cells = [];
+	      var visited = [];
+	
+	      var startingCell = this.randomCell();
+	      cells.push(startingCell);
+	      visited.push(startingCell);
+	
+	      while (cells.length > 0) {
+	        var index = cells.length - 1;
+	        var currentPos = cells[index];
+	
+	        var _currentPos = _slicedToArray(currentPos, 2),
+	            x = _currentPos[0],
+	            y = _currentPos[1];
+	
+	        var newPos = this.growingTreeStep(currentPos, visited);
+	
+	        if (newPos) {
+	          var _newPos = _slicedToArray(newPos, 2),
+	              nx = _newPos[0],
+	              ny = _newPos[1];
+	
+	          this.grid.cells[x][y].link(this.grid.cells[nx][ny], true);
+	          cells.push([nx, ny]);
+	          visited.push([nx, ny]);
+	        } else {
+	          cells.pop();
+	        }
+	      }
+	
+	      this.grid.configureWalls();
+	    }
+	  }, {
+	    key: 'growingTreeStep',
+	    value: function growingTreeStep(currentPos, visited) {
+	      var _currentPos2 = _slicedToArray(currentPos, 2),
+	          x = _currentPos2[0],
+	          y = _currentPos2[1];
+	
+	      var randDir = shuffle(['N', 'S', 'E', 'W']);
+	
+	      for (var i = 0; i < randDir.length; i++) {
+	        var dir = randDir[i];
+	        var nx = x + DX[dir],
+	            ny = y + DY[dir];
+	
+	
+	        if (this.inBounds(nx, ny) && this.unvisited(visited, nx, ny)) {
+	          return [nx, ny];
+	        }
+	      }
+	
+	      return false;
+	    }
+	  }, {
+	    key: 'unvisited',
+	    value: function unvisited(visited, nx, ny) {
+	      for (var i = 0; i < visited.length; i++) {
+	        if (visited[i][0] === nx && visited[i][1] === ny) {
+	          return false;
+	        }
+	      }
+	
+	      return true;
+	    }
+	  }, {
+	    key: 'inBounds',
+	    value: function inBounds(nx, ny) {
+	      var xMax = this.grid.cells.length;
+	      var yMax = this.grid.cells[0].length;
+	
+	      return xMax > nx && yMax > ny && nx >= 0 && ny >= 0;
+	    }
+	  }, {
+	    key: 'randomCell',
+	    value: function randomCell() {
+	      var x = Math.floor(Math.random() * this.grid.cells.length);
+	      var y = Math.floor(Math.random() * this.grid.cells[0].length);
+	      return [x, y];
+	    }
+	
+	    // This method mays GTA to be customized to be closer to Prims or the recursive backtracker.
+	    // Set index in GTA to eq the return value of this function. Remove index from cells instead of popping.
+	
+	  }, {
+	    key: 'nextIndex',
+	    value: function nextIndex() {}
+	  }]);
+	
+	  return Maze;
+	}();
+	
+	module.exports = Maze;
+
+/***/ },
+/* 3 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -101,8 +246,8 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var Cell = __webpack_require__(3);
-	var Wall = __webpack_require__(4);
+	var Cell = __webpack_require__(4);
+	var Wall = __webpack_require__(7);
 	
 	var Grid = function () {
 	  function Grid(rows, cols) {
@@ -159,14 +304,13 @@
 	    value: function configureWalls() {
 	      var walls = [];
 	
-	      this.toString();
+	      // this.toString();
 	
 	      this.cells.forEach(function (row, i) {
 	        var top = [];
 	        var bottom = [];
 	
 	        row.forEach(function (cell, j) {
-	          // Mess w/ coords here.
 	          if (cell.isLinked(cell.east)) {
 	            top.push(new Wall(true, true, [(j + 1) * 50, (i + 1) * 50]));
 	          } else {
@@ -260,14 +404,14 @@
 	module.exports = Grid;
 
 /***/ },
-/* 3 */
+/* 4 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
-	var _lodash = __webpack_require__(7);
+	var _lodash = __webpack_require__(5);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -381,210 +525,7 @@
 	module.exports = Cell;
 
 /***/ },
-/* 4 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Wall = function () {
-	  function Wall(open, vertical, pos) {
-	    _classCallCheck(this, Wall);
-	
-	    this.open = open;
-	    this.vertical = vertical;
-	    this.pos = pos;
-	  }
-	
-	  _createClass(Wall, [{
-	    key: "draw",
-	    value: function draw(ctx) {
-	      if (this.open) {
-	        ctx.fillStyle = "white";
-	      } else {
-	        ctx.fillStyle = "black";
-	      }
-	
-	      if (this.vertical) {
-	        ctx.fillRect(this.pos[0], this.pos[1], 2, 50);
-	      } else {
-	        ctx.fillRect(this.pos[0], this.pos[1], 50, 2);
-	      }
-	    }
-	  }]);
-	
-	  return Wall;
-	}();
-	
-	module.exports = Wall;
-
-/***/ },
 /* 5 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Grid = __webpack_require__(2);
-	
-	var Stage = function Stage(game, ctx) {
-	  _classCallCheck(this, Stage);
-	
-	  this.game = game;
-	  this.ctx = ctx;
-	};
-	
-	module.exports = Stage;
-
-/***/ },
-/* 6 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Grid = __webpack_require__(2);
-	
-	var N = 1,
-	    S = 2,
-	    E = 4,
-	    W = 8;
-	
-	var DX = { E: 1, W: -1, N: 0, S: 0 };
-	var DY = { E: 0, W: 0, N: -1, S: 1 };
-	var OPPOSITE = { E: W, W: E, N: S, S: N };
-	
-	function shuffle(array) {
-	  for (var i = array.length; i; i--) {
-	    var j = Math.floor(Math.random() * i);
-	    var _ref = [array[j], array[i - 1]];
-	    array[i - 1] = _ref[0];
-	    array[j] = _ref[1];
-	  }
-	
-	  return array;
-	}
-	
-	var Maze = function () {
-	  function Maze(grid) {
-	    _classCallCheck(this, Maze);
-	
-	    this.grid = grid;
-	  }
-	
-	  // don't forget to configure walls after organizing the cells
-	
-	
-	  _createClass(Maze, [{
-	    key: 'growingTree',
-	    value: function growingTree() {
-	      var cells = [];
-	      var visited = [];
-	
-	      var startingCell = this.randomCell();
-	      cells.push(startingCell);
-	      visited.push(startingCell);
-	
-	      while (cells.length > 0) {
-	        var index = cells.length - 1;
-	        var currentPos = cells[index];
-	
-	        var _currentPos = _slicedToArray(currentPos, 2),
-	            x = _currentPos[0],
-	            y = _currentPos[1];
-	
-	        // console.log(currentPos);
-	
-	        var newPos = this.growingTreeStep(currentPos, visited);
-	
-	        if (newPos) {
-	          var _newPos = _slicedToArray(newPos, 2),
-	              nx = _newPos[0],
-	              ny = _newPos[1];
-	
-	          this.grid.cells[x][y].link(this.grid.cells[nx][ny], true);
-	          cells.push([nx, ny]);
-	          visited.push([nx, ny]);
-	        } else {
-	          // console.log('popped');
-	          cells.pop();
-	        }
-	      }
-	
-	      this.grid.configureWalls();
-	    }
-	  }, {
-	    key: 'growingTreeStep',
-	    value: function growingTreeStep(currentPos, visited) {
-	      var _currentPos2 = _slicedToArray(currentPos, 2),
-	          x = _currentPos2[0],
-	          y = _currentPos2[1];
-	
-	      var randDir = shuffle(['N', 'S', 'E', 'W']);
-	
-	      for (var i = 0; i < randDir.length; i++) {
-	        var dir = randDir[i];
-	        var nx = x + DX[dir],
-	            ny = y + DY[dir];
-	
-	
-	        if (this.inBounds(nx, ny) && this.unvisited(visited, nx, ny)) {
-	          return [nx, ny];
-	        }
-	      }
-	
-	      return false;
-	    }
-	  }, {
-	    key: 'unvisited',
-	    value: function unvisited(visited, nx, ny) {
-	      for (var i = 0; i < visited.length; i++) {
-	        if (visited[i][0] === nx && visited[i][1] === ny) {
-	          return false;
-	        }
-	      }
-	
-	      return true;
-	    }
-	  }, {
-	    key: 'inBounds',
-	    value: function inBounds(nx, ny) {
-	      var xMax = this.grid.cells.length;
-	      var yMax = this.grid.cells[0].length;
-	
-	      return xMax > nx && yMax > ny && nx >= 0 && ny >= 0;
-	    }
-	  }, {
-	    key: 'randomCell',
-	    value: function randomCell() {
-	      var x = Math.floor(Math.random() * this.grid.cells.length);
-	      var y = Math.floor(Math.random() * this.grid.cells[0].length);
-	      return [x, y];
-	    }
-	
-	    // This method allows the GTA to be customized to be closer to Prims or the recursive backtracker.
-	
-	  }, {
-	    key: 'nextIndex',
-	    value: function nextIndex() {}
-	  }]);
-	
-	  return Maze;
-	}();
-	
-	module.exports = Maze;
-
-/***/ },
-/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __WEBPACK_AMD_DEFINE_RESULT__;/* WEBPACK VAR INJECTION */(function(global, module) {/**
@@ -17664,10 +17605,10 @@
 	  }
 	}.call(this));
 	
-	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(8)(module)))
+	/* WEBPACK VAR INJECTION */}.call(exports, (function() { return this; }()), __webpack_require__(6)(module)))
 
 /***/ },
-/* 8 */
+/* 6 */
 /***/ function(module, exports) {
 
 	module.exports = function(module) {
@@ -17681,6 +17622,168 @@
 		return module;
 	}
 
+
+/***/ },
+/* 7 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	function randomColor() {
+	  var hexDigits = "0123456789ABCDEF";
+	
+	  var color = "#";
+	  for (var i = 0; i < 3; i++) {
+	    color += hexDigits[Math.floor(Math.random() * 16)];
+	  }
+	
+	  return color;
+	}
+	
+	var Wall = function () {
+	  function Wall(open, vertical, pos) {
+	    _classCallCheck(this, Wall);
+	
+	    this.open = open;
+	    this.vertical = vertical;
+	    this.pos = pos;
+	  }
+	
+	  _createClass(Wall, [{
+	    key: "draw",
+	    value: function draw(ctx) {
+	      if (this.open) {
+	        ctx.fillStyle = "white";
+	      } else {
+	        ctx.fillStyle = 'black';
+	      }
+	
+	      if (this.vertical) {
+	        ctx.fillRect(this.pos[0], this.pos[1], 2, 50);
+	      } else {
+	        ctx.fillRect(this.pos[0], this.pos[1], 50, 2);
+	      }
+	    }
+	  }]);
+	
+	  return Wall;
+	}();
+	
+	module.exports = Wall;
+
+/***/ },
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Player = __webpack_require__(9);
+	
+	var MOVES = {
+	  "w": [0, -1],
+	  "a": [-1, 0],
+	  "s": [0, 1],
+	  "d": [1, 0]
+	};
+	
+	var Stage = function () {
+	  function Stage(game, ctx) {
+	    _classCallCheck(this, Stage);
+	
+	    this.game = game;
+	    this.ctx = ctx;
+	
+	    this.player = new Player();
+	  }
+	
+	  _createClass(Stage, [{
+	    key: "bindKeyHandlers",
+	    value: function bindKeyHandlers() {
+	      var player = this.player;
+	      //
+	      Object.keys(MOVES).forEach(function (k) {
+	        var move = MOVES[k];
+	        key(k, function () {
+	          player.power(move);
+	        });
+	      });
+	    }
+	  }, {
+	    key: "start",
+	    value: function start() {
+	      this.bindKeyHandlers();
+	      this.lastTime = 0;
+	      //start the animation
+	      requestAnimationFrame(this.animate.bind(this));
+	    }
+	  }, {
+	    key: "animate",
+	    value: function animate(time) {
+	      // const timeDelta = time - this.lastTime;
+	
+	      // this.game.step(timeDelta);
+	      this.draw();
+	      // this.lastTime = time;
+	
+	      //every call to animate requests causes another call to animate
+	      requestAnimationFrame(this.animate.bind(this));
+	    }
+	  }, {
+	    key: "draw",
+	    value: function draw() {
+	      this.game.draw(this.ctx);
+	      this.player.draw(this.ctx);
+	    }
+	  }]);
+	
+	  return Stage;
+	}();
+	
+	module.exports = Stage;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Player = function () {
+	  function Player() {
+	    _classCallCheck(this, Player);
+	
+	    this.color = '#74e43c';
+	    this.pos = [0, 0];
+	  }
+	
+	  _createClass(Player, [{
+	    key: 'draw',
+	    value: function draw(ctx) {
+	      //   ctx.fillStyle = this.color;
+	      //
+	      //   ctx.beginPath();
+	      //   ctx.arc(
+	      //     this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, true
+	      //   );
+	      //   ctx.fill();
+	    }
+	  }]);
+	
+	  return Player;
+	}();
+	
+	module.exports = Player;
 
 /***/ }
 /******/ ]);

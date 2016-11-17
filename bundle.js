@@ -47,7 +47,7 @@
 	"use strict";
 	
 	var Game = __webpack_require__(1);
-	var Stage = __webpack_require__(8);
+	var Stage = __webpack_require__(10);
 	
 	// TODO: for testing
 	var Grid = __webpack_require__(3);
@@ -83,7 +83,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Maze = __webpack_require__(2);
-	var Player = __webpack_require__(9);
+	var Player = __webpack_require__(8);
 	
 	var Game = function () {
 	  function Game() {
@@ -338,15 +338,18 @@
 	        var bottom = [];
 	
 	        row.forEach(function (cell, j) {
-	          if (cell.isLinked(cell.east)) {
-	            // top.push(new Wall(true, true, [ (j + 1) * 32, (i + 1) * 32 ]));
-	          } else {
+	
+	          // westmost wall
+	          top.push(new Wall(false, true, [0, (i + 1) * 32]));
+	
+	          // northmost wall
+	          bottom.push(new Wall(false, false, [j * 32, 32]));
+	
+	          if (!cell.isLinked(cell.east)) {
 	            top.push(new Wall(false, true, [(j + 1) * 32, (i + 1) * 32]));
 	          }
 	
-	          if (cell.isLinked(cell.south)) {
-	            // bottom.push(new Wall(true, false, [(j) * 32, (i + 2) * 32]));
-	          } else {
+	          if (!cell.isLinked(cell.south)) {
 	            bottom.push(new Wall(false, false, [j * 32, (i + 2) * 32]));
 	          }
 	        });
@@ -17714,6 +17717,204 @@
 
 /***/ },
 /* 8 */
+/***/ function(module, exports, __webpack_require__) {
+
+	"use strict";
+	
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Util = __webpack_require__(9);
+	
+	function randomColor() {
+	  var hexDigits = "0123456789ABCDEF";
+	
+	  var color = "#";
+	  for (var i = 0; i < 3; i++) {
+	    color += hexDigits[Math.floor(Math.random() * 16)];
+	  }
+	
+	  return color;
+	}
+	
+	var Player = function () {
+	  function Player() {
+	    var _this = this;
+	
+	    _classCallCheck(this, Player);
+	
+	    this.color = randomColor();
+	    this.pos = [15, 50];
+	    this.vel = [0, 0];
+	    this.radius = 7;
+	
+	    setInterval(function () {
+	      return _this.color = randomColor();
+	    }, 5000);
+	  }
+	
+	  _createClass(Player, [{
+	    key: "draw",
+	    value: function draw(ctx) {
+	      ctx.fillStyle = this.color;
+	
+	      ctx.beginPath();
+	      ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, true);
+	      ctx.fill();
+	    }
+	  }, {
+	    key: "power",
+	    value: function power(impulse) {
+	      this.vel[0] += impulse[0];
+	      this.vel[1] += impulse[1];
+	    }
+	  }, {
+	    key: "move",
+	    value: function move(timeDelta) {
+	      var velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
+	          offsetX = this.vel[0] * velocityScale,
+	          offsetY = this.vel[1] * velocityScale;
+	
+	      var newPos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
+	
+	      if (this.inBounds(newPos) && !this.collided) {
+	        this.pos = newPos;
+	      } else {
+	        // this.vel = [this.vel[0] - offsetX, this.vel[1] - offsetY]
+	        this.vel = [-this.vel[0] / 2, -this.vel[1] / 2];
+	        this.pos = [this.pos[0] - offsetX * 2, this.pos[1] - offsetY * 2];
+	        this.collided = false;
+	      }
+	
+	      // if (this.game.isOutOfBounds(this.pos)) {
+	      //   this.vel = [0, 0]
+	      // }
+	    }
+	  }, {
+	    key: "inBounds",
+	    value: function inBounds(pos) {
+	      var _pos = _slicedToArray(pos, 2),
+	          x = _pos[0],
+	          y = _pos[1];
+	
+	      return x >= 4 && x < 650 && y >= 4 && y <= 700;
+	    }
+	  }, {
+	    key: "isOutOfBounds",
+	    value: function isOutOfBounds() {}
+	  }, {
+	    key: "checkCollision",
+	    value: function checkCollision(wall) {
+	      var startPointDist = Util.dist(wall.startPos, this.pos);
+	      var endPointDist = Util.dist(wall.endPos, this.pos);
+	
+	      var collision = Util.checkCollisionWithLineIntercepts(this, wall.startPos, wall.endPos);
+	
+	      if (collision) {
+	        this.collided = true;
+	        // this.handleCollision();
+	      } else {
+	        return false;
+	      }
+	    }
+	  }, {
+	    key: "handleCollision",
+	    value: function handleCollision() {
+	      this.vel = [0, 0];
+	    }
+	  }]);
+	
+	  return Player;
+	}();
+	
+	module.exports = Player;
+	
+	var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+	
+	var _lodash = __webpack_require__(5);
+	
+	var Util = {
+	  // FInd distance between two points
+	  dist: function dist(pos1, pos2) {
+	    return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
+	  },
+	
+	
+	  // TODO: improve variable naming
+	  checkCollisionWithLineIntercepts: function checkCollisionWithLineIntercepts(circle, startPos, endPos) {
+	    var a = void 0,
+	        b = void 0,
+	        c = void 0,
+	        d = void 0,
+	        u1 = void 0,
+	        u2 = void 0,
+	        ret = void 0,
+	        retP1 = void 0,
+	        retP2 = void 0,
+	        v1 = void 0,
+	        v2 = void 0,
+	        radius = void 0;
+	    v1 = {};
+	    v2 = {};
+	
+	    radius = circle.radius - .5;
+	
+	    v1.x = endPos[0] - startPos[0];
+	    v1.y = endPos[1] - startPos[1];
+	    v2.x = startPos[0] - circle.pos[0];
+	    v2.y = startPos[1] - circle.pos[1];
+	
+	    b = v1.x * v2.x + v1.y * v2.y;
+	    c = 2 * (v1.x * v1.x + v1.y * v1.y);
+	    b *= -2;
+	    d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius));
+	
+	    if (isNaN(d)) {
+	      // no intercept
+	      return false;
+	    }
+	
+	    u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
+	    u2 = (b + d) / c;
+	    retP1 = {}; // return points
+	    retP2 = {};
+	    ret = []; // return array
+	    //
+	    // if(u1 <= 1 && u1 >= 0){  // add point if on the line segment
+	    //     retP1.x = startPos[0] + v1.x * u1;
+	    //     retP1.y = startPos[1] + v1.y * u1;
+	    //     ret[0] = retP1;
+	    // }
+	
+	    if (u2 <= 1 && u2 >= 0) {
+	      // second add point if on the line segment
+	      retP2.x = startPos[0] + v1.x * u2;
+	      retP2.y = startPos[0].y + v1.y * u2;
+	      ret[ret.length] = retP2;
+	    }
+	
+	    if (ret.length === 0) {
+	      return false;
+	    } else {
+	      // debugger
+	      return true;
+	    }
+	  }
+	};
+	
+	module.exports = Util;
+
+/***/ },
+/* 10 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -17782,197 +17983,6 @@
 	}();
 	
 	module.exports = Stage;
-
-/***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Util = __webpack_require__(10);
-	
-	function randomColor() {
-	  var hexDigits = "0123456789ABCDEF";
-	
-	  var color = "#";
-	  for (var i = 0; i < 3; i++) {
-	    color += hexDigits[Math.floor(Math.random() * 16)];
-	  }
-	
-	  return color;
-	}
-	
-	var Player = function () {
-	  function Player() {
-	    var _this = this;
-	
-	    _classCallCheck(this, Player);
-	
-	    this.color = randomColor();
-	    this.pos = [25, 25];
-	    this.vel = [0, 0];
-	    this.radius = 7;
-	
-	    setInterval(function () {
-	      return _this.color = randomColor();
-	    }, 5000);
-	  }
-	
-	  _createClass(Player, [{
-	    key: "draw",
-	    value: function draw(ctx) {
-	      ctx.fillStyle = this.color;
-	
-	      ctx.beginPath();
-	      ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, true);
-	      ctx.fill();
-	    }
-	  }, {
-	    key: "power",
-	    value: function power(impulse) {
-	      this.vel[0] += impulse[0];
-	      this.vel[1] += impulse[1];
-	    }
-	  }, {
-	    key: "move",
-	    value: function move(timeDelta) {
-	      var velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
-	          offsetX = this.vel[0] * velocityScale,
-	          offsetY = this.vel[1] * velocityScale;
-	
-	      var newPos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
-	
-	      if (this.inBounds(newPos) && !this.collided) {
-	        this.pos = newPos;
-	      } else {
-	        this.vel = [this.vel[0] - offsetX, this.vel[1] - offsetY];
-	        this.pos = [this.pos[0] - offsetX * 2, this.pos[1] - offsetY * 2];
-	        this.collided = false;
-	      }
-	
-	      // if (this.game.isOutOfBounds(this.pos)) {
-	      //   this.vel = [0, 0]
-	      // }
-	    }
-	  }, {
-	    key: "inBounds",
-	    value: function inBounds(pos) {
-	      var _pos = _slicedToArray(pos, 2),
-	          x = _pos[0],
-	          y = _pos[1];
-	
-	      return x >= 4 && x < 650 && y >= 4 && y <= 700;
-	    }
-	  }, {
-	    key: "isOutOfBounds",
-	    value: function isOutOfBounds() {}
-	  }, {
-	    key: "checkCollision",
-	    value: function checkCollision(wall) {
-	      var startPointDist = Util.dist(wall.startPos, this.pos);
-	      var endPointDist = Util.dist(wall.endPos, this.pos);
-	
-	      var collision = Util.checkCollisionWithLineIntercepts(this, wall.startPos, wall.endPos);
-	
-	      if (collision) {
-	        this.collided = true;
-	        // this.handleCollision();
-	      } else {
-	        return false;
-	      }
-	    }
-	  }, {
-	    key: "handleCollision",
-	    value: function handleCollision() {
-	      this.vel = [0, 0];
-	    }
-	  }]);
-	
-	  return Player;
-	}();
-	
-	module.exports = Player;
-	
-	var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
-
-/***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var _lodash = __webpack_require__(5);
-	
-	var Util = {
-	  // FInd distance between two points
-	  dist: function dist(pos1, pos2) {
-	    return Math.sqrt(Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2));
-	  },
-	
-	
-	  // TODO: improve variable naming
-	  checkCollisionWithLineIntercepts: function checkCollisionWithLineIntercepts(circle, startPos, endPos) {
-	    var a = void 0,
-	        b = void 0,
-	        c = void 0,
-	        d = void 0,
-	        u1 = void 0,
-	        u2 = void 0,
-	        ret = void 0,
-	        retP1 = void 0,
-	        retP2 = void 0,
-	        v1 = void 0,
-	        v2 = void 0;
-	    v1 = {};
-	    v2 = {};
-	    v1.x = endPos[0] - startPos[0];
-	    v1.y = endPos[1] - startPos[1];
-	    v2.x = startPos[0] - circle.pos[0];
-	    v2.y = startPos[1] - circle.pos[1];
-	    b = v1.x * v2.x + v1.y * v2.y;
-	    c = 2 * (v1.x * v1.x + v1.y * v1.y);
-	    b *= -2;
-	    d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - circle.radius * circle.radius));
-	
-	    if (isNaN(d)) {
-	      // no intercept
-	      return false;
-	    }
-	
-	    u1 = (b - d) / c; // these represent the unit distance of point one and two on the line
-	    u2 = (b + d) / c;
-	    retP1 = {}; // return points
-	    retP2 = {};
-	    ret = []; // return array
-	
-	    if (u1 <= 1 && u1 >= 0) {
-	      // add point if on the line segment
-	      retP1.x = startPos[0] + v1.x * u1;
-	      retP1.y = startPos[1] + v1.y * u1;
-	      ret[0] = retP1;
-	    }
-	    if (u2 <= 1 && u2 >= 0) {
-	      // second add point if on the line segment
-	      retP2.x = startPos[0] + v1.x * u2;
-	      retP2.y = startPos[0].y + v1.y * u2;
-	      ret[ret.length] = retP2;
-	    }
-	
-	    if (ret.length === 0) {
-	      return false;
-	    } else {
-	      return true;
-	    }
-	  }
-	};
-	
-	module.exports = Util;
 
 /***/ }
 /******/ ]);

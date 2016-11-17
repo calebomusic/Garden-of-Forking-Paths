@@ -20,6 +20,7 @@ html, body, header, nav, h1, h2, h4, h5, a, ul, li, div, form, p, input, button,
  resize: none;
 }
 
+/* BODY */
 body {
   background-color:black;
   background-image:
@@ -32,8 +33,15 @@ body {
   /*background-image: url('star.jpg')*/
 }
 
+/* GOFP */
 .gofp {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.gofp h1 {
+  font-size: 24px;
+  color: white;
+  margin-right: 10px;
 }

@@ -84,6 +84,7 @@
 	
 	var Maze = __webpack_require__(2);
 	var Player = __webpack_require__(8);
+	var Target = __webpack_require__(11);
 	
 	var Game = function () {
 	  function Game() {
@@ -92,6 +93,7 @@
 	    this.maze = new Maze(20, 20);
 	    this.maze.growingTree();
 	    this.player = new Player();
+	    this.target = new Target();
 	  }
 	
 	  _createClass(Game, [{
@@ -99,6 +101,7 @@
 	    value: function draw(ctx) {
 	      this.maze.grid.draw(ctx);
 	      this.player.draw(ctx);
+	      this.target.draw(ctx);
 	    }
 	  }, {
 	    key: 'step',
@@ -457,6 +460,7 @@
 	    this.south = null;
 	    this.links = {};
 	    this.pos = [];
+	    this.distance = 0;
 	
 	    // this.link.bind(this);
 	    // this.findDir.bind(this);
@@ -526,9 +530,7 @@
 	    }
 	  }, {
 	    key: 'draw',
-	    value: function draw(cell) {
-	      // To be filled in.
-	    }
+	    value: function draw(cell) {}
 	  }, {
 	    key: 'neighbors',
 	    value: function neighbors() {
@@ -17785,7 +17787,8 @@
 	      } else {
 	        // this.vel = [this.vel[0] - offsetX, this.vel[1] - offsetY]
 	        this.vel = [-this.vel[0] / 2, -this.vel[1] / 2];
-	        this.pos = [this.pos[0] - offsetX * 2, this.pos[1] - offsetY * 2];
+	
+	        this.pos = [this.pos[0], this.pos[1]];
 	        this.collided = false;
 	      }
 	
@@ -17889,11 +17892,12 @@
 	    retP2 = {};
 	    ret = []; // return array
 	    //
-	    // if(u1 <= 1 && u1 >= 0){  // add point if on the line segment
-	    //     retP1.x = startPos[0] + v1.x * u1;
-	    //     retP1.y = startPos[1] + v1.y * u1;
-	    //     ret[0] = retP1;
-	    // }
+	    if (u1 <= 1 && u1 >= 0) {
+	      // add point if on the line segment
+	      retP1.x = startPos[0] + v1.x * u1;
+	      retP1.y = startPos[1] + v1.y * u1;
+	      ret[0] = retP1;
+	    }
 	
 	    if (u2 <= 1 && u2 >= 0) {
 	      // second add point if on the line segment
@@ -17905,7 +17909,6 @@
 	    if (ret.length === 0) {
 	      return false;
 	    } else {
-	      // debugger
 	      return true;
 	    }
 	  }
@@ -17983,6 +17986,41 @@
 	}();
 	
 	module.exports = Stage;
+
+/***/ },
+/* 11 */
+/***/ function(module, exports) {
+
+	'use strict';
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var Target = function () {
+	  function Target() {
+	    _classCallCheck(this, Target);
+	
+	    this.pos = [623, 657];
+	    this.radius = 8;
+	  }
+	
+	  _createClass(Target, [{
+	    key: 'draw',
+	    value: function draw(ctx) {
+	      ctx.fillStyle = '#ff0000';
+	
+	      ctx.beginPath();
+	      ctx.arc(this.pos[0], this.pos[1], 9, 0, 2 * Math.PI, true);
+	
+	      ctx.fill();
+	    }
+	  }]);
+	
+	  return Target;
+	}();
+	
+	module.exports = Target;
 
 /***/ }
 /******/ ]);

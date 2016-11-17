@@ -47,7 +47,7 @@
 	"use strict";
 	
 	var Game = __webpack_require__(1);
-	var Stage = __webpack_require__(8);
+	var Stage = __webpack_require__(10);
 	
 	// TODO: for testing
 	var Grid = __webpack_require__(3);
@@ -83,7 +83,7 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Maze = __webpack_require__(2);
-	var Player = __webpack_require__(9);
+	var Player = __webpack_require__(8);
 	
 	var Game = function () {
 	  function Game() {
@@ -17707,77 +17707,6 @@
 
 /***/ },
 /* 8 */
-/***/ function(module, exports) {
-
-	"use strict";
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var MOVES = {
-	  "w": [0, -.1],
-	  "a": [-.1, 0],
-	  "s": [0, .1],
-	  "d": [.1, 0]
-	};
-	
-	var Stage = function () {
-	  function Stage(game, ctx) {
-	    _classCallCheck(this, Stage);
-	
-	    this.game = game;
-	    this.ctx = ctx;
-	    this.player = this.game.player;
-	  }
-	
-	  _createClass(Stage, [{
-	    key: "bindKeyHandlers",
-	    value: function bindKeyHandlers() {
-	      var player = this.player;
-	      //
-	      Object.keys(MOVES).forEach(function (k) {
-	        var move = MOVES[k];
-	        key(k, function () {
-	          player.power(move);
-	        });
-	      });
-	    }
-	  }, {
-	    key: "start",
-	    value: function start() {
-	      this.bindKeyHandlers();
-	      this.lastTime = 0;
-	      //start the animation
-	      requestAnimationFrame(this.animate.bind(this));
-	    }
-	  }, {
-	    key: "animate",
-	    value: function animate(time) {
-	      var timeDelta = time - this.lastTime;
-	
-	      this.game.step(timeDelta);
-	      this.draw();
-	      this.lastTime = time;
-	
-	      //every call to animate requests causes another call to animate
-	      requestAnimationFrame(this.animate.bind(this));
-	    }
-	  }, {
-	    key: "draw",
-	    value: function draw() {
-	      this.ctx.clearRect(0, 0, 1500, 1500);
-	      this.game.draw(this.ctx);
-	    }
-	  }]);
-	
-	  return Stage;
-	}();
-	
-	module.exports = Stage;
-
-/***/ },
-/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -17788,7 +17717,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
-	var Util = __webpack_require__(10);
+	var Util = __webpack_require__(9);
 	
 	var Player = function () {
 	  function Player() {
@@ -17875,7 +17804,7 @@
 	var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 
 /***/ },
-/* 10 */
+/* 9 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -17888,6 +17817,77 @@
 	};
 	
 	module.exports = Util;
+
+/***/ },
+/* 10 */
+/***/ function(module, exports) {
+
+	"use strict";
+	
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+	
+	var MOVES = {
+	  "w": [0, -.1],
+	  "a": [-.1, 0],
+	  "s": [0, .1],
+	  "d": [.1, 0]
+	};
+	
+	var Stage = function () {
+	  function Stage(game, ctx) {
+	    _classCallCheck(this, Stage);
+	
+	    this.game = game;
+	    this.ctx = ctx;
+	    this.player = this.game.player;
+	  }
+	
+	  _createClass(Stage, [{
+	    key: "bindKeyHandlers",
+	    value: function bindKeyHandlers() {
+	      var player = this.player;
+	      //
+	      Object.keys(MOVES).forEach(function (k) {
+	        var move = MOVES[k];
+	        key(k, function () {
+	          player.power(move);
+	        });
+	      });
+	    }
+	  }, {
+	    key: "start",
+	    value: function start() {
+	      this.bindKeyHandlers();
+	      this.lastTime = 0;
+	      //start the animation
+	      requestAnimationFrame(this.animate.bind(this));
+	    }
+	  }, {
+	    key: "animate",
+	    value: function animate(time) {
+	      var timeDelta = time - this.lastTime;
+	
+	      this.game.step(timeDelta);
+	      this.draw();
+	      this.lastTime = time;
+	
+	      //every call to animate requests causes another call to animate
+	      requestAnimationFrame(this.animate.bind(this));
+	    }
+	  }, {
+	    key: "draw",
+	    value: function draw() {
+	      this.ctx.clearRect(0, 0, 1500, 1500);
+	      this.game.draw(this.ctx);
+	    }
+	  }]);
+	
+	  return Stage;
+	}();
+	
+	module.exports = Stage;
 
 /***/ }
 /******/ ]);

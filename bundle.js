@@ -51,19 +51,14 @@
 	var Game = __webpack_require__(1);
 	var Stage = __webpack_require__(10);
 	
-	// TODO: for testing
-	var Grid = __webpack_require__(3);
-	var Wall = __webpack_require__(7);
-	var Maze = __webpack_require__(2);
-	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var canvasEl = document.getElementsByTagName("canvas")[0];
 	  canvasEl.width = 546;
 	  canvasEl.height = 600;
 	  var ctx = canvasEl.getContext("2d");
 	
+	  // Generate Garden
 	  var generateGarden = function generateGarden() {
-	    console.log('generating');
 	    var engine = _main.Engine.create();
 	    var world = _main.World.create();
 	
@@ -90,15 +85,15 @@
 	    _main.Engine.run(engine);
 	  };
 	
+	  // Modal and Buttons
 	  var generateButton = document.getElementById('generate');
+	  var aboutButton = document.getElementById('about');
+	  var modal = document.getElementsByClassName('modal')[0];
+	  var closeModal = document.getElementById('close');
 	
 	  generateButton.onclick = function () {
 	    return generateGarden();
 	  };
-	
-	  var aboutButton = document.getElementById('about');
-	  var modal = document.getElementsByClassName('modal')[0];
-	  var closeModal = document.getElementById('close');
 	
 	  window.onclick = function (e) {
 	    if (e.target == modal) {
@@ -113,8 +108,6 @@
 	    return modal.style.display = 'block';
 	  };
 	});
-	
-	window.grid = Grid;
 
 /***/ },
 /* 1 */
@@ -130,7 +123,6 @@
 	
 	var Maze = __webpack_require__(2);
 	var Player = __webpack_require__(8);
-	var Target = __webpack_require__(11);
 	
 	var Game = function () {
 	  function Game(engine, world) {
@@ -158,13 +150,6 @@
 	      });
 	    }
 	  }, {
-	    key: 'draw',
-	    value: function draw(ctx) {
-	      this.maze.grid.draw(ctx);
-	      this.player.draw(ctx);
-	      this.target.draw(ctx);
-	    }
-	  }, {
 	    key: 'step',
 	    value: function step(timeDelta) {
 	      var _this = this;
@@ -176,7 +161,6 @@
 	        }, 1000);
 	      }
 	      this.movePlayer(timeDelta);
-	      this.checkCollisions();
 	    }
 	  }, {
 	    key: 'checkTarget',
@@ -197,19 +181,6 @@
 	    key: 'movePlayer',
 	    value: function movePlayer(delta) {
 	      this.player.move(delta);
-	    }
-	  }, {
-	    key: 'checkCollisions',
-	    value: function checkCollisions() {
-	      var walls = this.maze.grid.walls.reduce(function (a, b) {
-	        return a.concat(b);
-	      });
-	
-	      for (var i = 0; i < walls.length; i++) {
-	        if (this.player.checkCollision(walls[i])) {
-	          return;
-	        }
-	      }
 	    }
 	  }]);
 	
@@ -335,13 +306,6 @@
 	      var y = Math.floor(Math.random() * this.grid.cells[0].length);
 	      return [x, y];
 	    }
-	
-	    // This method mays GTA to be customized to be closer to Prims or the recursive backtracker.
-	    // Set index in GTA to eq the return value of this function. Remove index from cells instead of popping.
-	
-	  }, {
-	    key: 'nextIndex',
-	    value: function nextIndex() {}
 	  }]);
 	
 	  return Maze;
@@ -362,7 +326,6 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Cell = __webpack_require__(4);
-	var Wall = __webpack_require__(7);
 	
 	function randomColor() {
 	  var hexDigits = "0123456789ABCDEF";
@@ -439,10 +402,7 @@
 	        var wall = void 0;
 	
 	        row.forEach(function (cell, j) {
-	
-	          // TODO: bring this back
 	          // westmost wall
-	
 	          top.push(_main.Bodies.rectangle(1, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
 	            render: {
 	              fillStyle: randomColor(),
@@ -474,7 +434,6 @@
 	          }
 	
 	          if (!cell.isLinked(cell.south)) {
-	            // bottom.push(new Wall(false, false, [(j) * 32, (i + 2) * 32]));
 	            bottom.push(_main.Bodies.rectangle(j * 32 + 19, (i + 2) * 32, 31, 2, { isStatic: true,
 	              render: {
 	                fillStyle: randomColor(),
@@ -491,6 +450,7 @@
 	      });
 	
 	      this.walls = walls;
+	
 	      if (this.walls.length > 0 && this.engine.world) {
 	        var flattenedWalls = this.walls.reduce(function (a, b) {
 	          return a.concat(b);
@@ -522,11 +482,6 @@
 	      console.log(output);
 	    }
 	  }, {
-	    key: 'draw',
-	    value: function draw(ctx) {
-	      // this.eachWall( wall => wall.draw(ctx));
-	    }
-	  }, {
 	    key: 'inBounds',
 	    value: function inBounds(newCoord, max) {
 	      if (max === this.rows) {
@@ -539,24 +494,6 @@
 	    key: 'eachCell',
 	    value: function eachCell(callback) {
 	      this.cells.forEach(function (row) {
-	        row.forEach(function (cell) {
-	          callback(cell);
-	        });
-	      });
-	    }
-	  }, {
-	    key: 'eachWall',
-	    value: function eachWall(callback) {
-	      this.walls.forEach(function (row) {
-	        row.forEach(function (cell) {
-	          callback(cell);
-	        });
-	      });
-	    }
-	  }, {
-	    key: 'everyCellAndWall',
-	    value: function everyCellAndWall(callback) {
-	      this.maze.forEach(function (row) {
 	        row.forEach(function (cell) {
 	          callback(cell);
 	        });
@@ -17789,73 +17726,11 @@
 
 
 /***/ },
-/* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	"use strict";
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _main = __webpack_require__(13);
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	function randomColor() {
-	  var hexDigits = "0123456789ABCDEF";
-	
-	  var color = "#";
-	  for (var i = 0; i < 3; i++) {
-	    color += hexDigits[Math.floor(Math.random() * 16)];
-	  }
-	
-	  return color;
-	}
-	
-	var Wall = function () {
-	  function Wall(open, vertical, startPos) {
-	    var _this = this;
-	
-	    _classCallCheck(this, Wall);
-	
-	    this.open = open;
-	    this.vertical = vertical;
-	    this.startPos = startPos;
-	    this.endPos = startPos;
-	    this.color = randomColor();
-	    this.body = setInterval(function () {
-	      return _this.color = randomColor();
-	    }, (Math.random() + .1) * 5000);
-	  }
-	
-	  _createClass(Wall, [{
-	    key: "draw",
-	    value: function draw(ctx) {
-	      if (this.open) {
-	        ctx.fillStyle = "white";
-	      } else {
-	        ctx.fillStyle = this.color;
-	      }
-	
-	      if (this.vertical) {
-	        ctx.fillRect(this.startPos[0], this.startPos[1], 2, 32);
-	        this.endPos = [this.startPos[0] + 2, this.startPos[1] + 32];
-	      } else {
-	        ctx.fillRect(this.startPos[0], this.startPos[1], 32, 2);
-	        this.endPos = [this.startPos[0] + 32, this.startPos[1] + 2];
-	      }
-	    }
-	  }]);
-	
-	  return Wall;
-	}();
-	
-	module.exports = Wall;
-
-/***/ },
+/* 7 */,
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	'use strict';
+	"use strict";
 	
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 	
@@ -17864,8 +17739,6 @@
 	var _main = __webpack_require__(13);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Util = __webpack_require__(9);
 	
 	function randomColor() {
 	  var hexDigits = "0123456789ABCDEF";
@@ -17900,7 +17773,7 @@
 	  }
 	
 	  _createClass(Player, [{
-	    key: 'draw',
+	    key: "draw",
 	    value: function draw(ctx) {
 	      ctx.fillStyle = this.color;
 	
@@ -17909,7 +17782,7 @@
 	      ctx.fill();
 	    }
 	  }, {
-	    key: 'power',
+	    key: "power",
 	    value: function power(impulse) {
 	      // this.vel[0] += impulse[0];
 	      // this.vel[1] += impulse[1];
@@ -17919,7 +17792,7 @@
 	      // this.circle.speed = impulse[0];
 	    }
 	  }, {
-	    key: 'move',
+	    key: "move",
 	    value: function move(timeDelta) {
 	      var velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
 	          offsetX = this.circle.velocity.x * velocityScale,
@@ -17930,7 +17803,7 @@
 	      _main.Body.setPosition(this.circle, { x: newPos[0], y: newPos[1] });
 	    }
 	  }, {
-	    key: 'inBounds',
+	    key: "inBounds",
 	    value: function inBounds(pos) {
 	      var _pos = _slicedToArray(pos, 2),
 	          x = _pos[0],
@@ -17939,10 +17812,10 @@
 	      return x >= 4 && x < 650 && y >= 4 && y <= 700;
 	    }
 	  }, {
-	    key: 'isOutOfBounds',
+	    key: "isOutOfBounds",
 	    value: function isOutOfBounds() {}
 	  }, {
-	    key: 'checkCollision',
+	    key: "checkCollision",
 	    value: function checkCollision(wall) {
 	      var startPointDist = Util.dist(wall.startPos, this.pos);
 	      var endPointDist = Util.dist(wall.endPos, this.pos);
@@ -17957,7 +17830,7 @@
 	      }
 	    }
 	  }, {
-	    key: 'handleCollision',
+	    key: "handleCollision",
 	    value: function handleCollision() {
 	      this.vel = [0, 0];
 	    }
@@ -17971,81 +17844,13 @@
 	var NORMAL_FRAME_TIME_DELTA = 1000 / 60;
 
 /***/ },
-/* 9 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-	
-	var _lodash = __webpack_require__(5);
-	
-	var Util = {
-	  // FInd distance between two points
-	  dist: function dist(pos1, pos2) {
-	    // return Math.sqrt(
-	    //   Math.pow(pos1[0] - pos2[0], 2) + Math.pow(pos1[1] - pos2[1], 2)
-	    // );
-	  },
-	
-	
-	  // TODO: improve variable naming
-	  checkCollisionWithLineIntercepts: function checkCollisionWithLineIntercepts(circle, startPos, endPos) {
-	    //   let a, b, c, d, u1, u2, ret, retP1, retP2, v1, v2, radius;
-	    //   v1 = {};
-	    //   v2 = {};
-	    //
-	    //   radius = circle.radius - .5;
-	    //
-	    //   v1.x = endPos[0] - startPos[0];
-	    //   v1.y = endPos[1] - startPos[1];
-	    //   v2.x = startPos[0] - circle.pos[0];
-	    //   v2.y = startPos[1] - circle.pos[1];
-	    //
-	    //   b = (v1.x * v2.x + v1.y * v2.y);
-	    //   c = 2 * (v1.x * v1.x + v1.y * v1.y);
-	    //   b *= -2;
-	    //   d = Math.sqrt(b * b - 2 * c * (v2.x * v2.x + v2.y * v2.y - radius * radius));
-	    //
-	    //   if(isNaN(d)){ // no intercept
-	    //       return false;
-	    //   }
-	    //
-	    //   u1 = (b - d) / c;  // these represent the unit distance of point one and two on the line
-	    //   u2 = (b + d) / c;
-	    //   retP1 = {};   // return points
-	    //   retP2 = {}
-	    //   ret = []; // return array
-	    //   //
-	    //   if(u1 <= 1 && u1 >= 0){  // add point if on the line segment
-	    //       retP1.x = startPos[0] + v1.x * u1;
-	    //       retP1.y = startPos[1] + v1.y * u1;
-	    //       ret[0] = retP1;
-	    //   }
-	    //
-	    //   if(u2 <= 1 && u2 >= 0){  // second add point if on the line segment
-	    //       retP2.x = startPos[0] + v1.x * u2;
-	    //       retP2.y = startPos[0].y + v1.y * u2;
-	    //       ret[ret.length] = retP2;
-	    //   }
-	    //
-	    //   if (ret.length === 0) {
-	    //     return false;
-	    //   } else {
-	    //     return true;
-	    //   }
-	  }
-	};
-	
-	module.exports = Util;
-
-/***/ },
+/* 9 */,
 /* 10 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ function(module, exports) {
 
 	"use strict";
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	var _main = __webpack_require__(13);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -18084,6 +17889,7 @@
 	    value: function start() {
 	      this.bindKeyHandlers();
 	      this.lastTime = 0;
+	
 	      //start the animation
 	      requestAnimationFrame(this.animate.bind(this));
 	    }
@@ -18093,16 +17899,9 @@
 	      var timeDelta = time - this.lastTime;
 	
 	      this.game.step(timeDelta);
-	      this.draw();
 	      this.lastTime = time;
 	      //every call to animate requests causes another call to animate
 	      requestAnimationFrame(this.animate.bind(this));
-	    }
-	  }, {
-	    key: "draw",
-	    value: function draw() {
-	      // this.ctx.clearRect(0, 0, 1500, 1500);
-	      // this.game.draw(this.ctx);
 	    }
 	  }]);
 	
@@ -18112,41 +17911,7 @@
 	module.exports = Stage;
 
 /***/ },
-/* 11 */
-/***/ function(module, exports) {
-
-	'use strict';
-	
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-	
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-	
-	var Target = function () {
-	  function Target() {
-	    _classCallCheck(this, Target);
-	
-	    this.pos = [623, 657];
-	    this.radius = 8;
-	  }
-	
-	  _createClass(Target, [{
-	    key: 'draw',
-	    value: function draw(ctx) {
-	      ctx.fillStyle = '#ff0000';
-	
-	      ctx.beginPath();
-	      ctx.arc(this.pos[0], this.pos[1], 9, 0, 2 * Math.PI, true);
-	
-	      ctx.fill();
-	    }
-	  }]);
-	
-	  return Target;
-	}();
-	
-	module.exports = Target;
-
-/***/ },
+/* 11 */,
 /* 12 */,
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {

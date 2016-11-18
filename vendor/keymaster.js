@@ -36,7 +36,7 @@
 
   for(k=1;k<20;k++) _MAP['f'+k] = 111+k;
 
-  // IE doesn't support Array#indexOf, so have a simple replacement
+  // IE doesn't support Array#indexOf, so have a simple replacement.
   function index(array, item){
     var i = array.length;
     while(i--) if(array[i]===item) return i;

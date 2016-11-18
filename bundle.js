@@ -58,46 +58,60 @@
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var canvasEl = document.getElementsByTagName("canvas")[0];
-	  canvasEl.width = 800;
+	  canvasEl.width = 546;
 	  canvasEl.height = 600;
 	  var ctx = canvasEl.getContext("2d");
 	
-	  // const generateGarden = () => {
-	  var engine = _main.Engine.create();
-	  var world = _main.World.create();
+	  var generateGarden = function generateGarden() {
+	    console.log('generating');
+	    var engine = _main.Engine.create();
+	    var world = _main.World.create();
 	
-	  engine.world.gravity.y = 0;
+	    engine.world.gravity.y = 0;
 	
-	  var stage = document.getElementById('stage');
+	    var stage = document.getElementById('stage');
 	
-	  var render = _main.Render.create({
-	    element: stage,
-	    canvas: canvasEl,
-	    engine: engine,
-	    options: {
-	      width: 544,
-	      wireframes: false,
-	      background: ''
+	    var render = _main.Render.create({
+	      element: stage,
+	      canvas: canvasEl,
+	      engine: engine,
+	      options: {
+	        width: 546,
+	        wireframes: false,
+	        background: ''
+	      }
+	    });
+	
+	    _main.Render.run(render);
+	
+	    var game = new Game(engine, world);
+	    new Stage(game, ctx, engine).start();
+	
+	    _main.Engine.run(engine);
+	  };
+	
+	  var generateButton = document.getElementById('generate');
+	
+	  generateButton.onclick = function () {
+	    return generateGarden();
+	  };
+	
+	  var aboutButton = document.getElementById('about');
+	  var modal = document.getElementsByClassName('modal')[0];
+	  var closeModal = document.getElementById('close');
+	
+	  window.onclick = function (e) {
+	    if (e.target == modal) {
+	      modal.style.display = 'none';
 	    }
-	  });
+	  };
 	
-	  _main.Render.run(render);
-	
-	  // // TODO: testing
-	  // var boxA = Bodies.rectangle(400, 200, 80, 80);
-	  // var boxB = Bodies.rectangle(450, 50, 80, 80);
-	  // var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-	  //
-	  // World.add(engine.world, [boxA, boxB, ground]);
-	
-	  var game = new Game(engine, world);
-	  new Stage(game, ctx, engine).start();
-	
-	  _main.Engine.run(engine);
-	
-	  //TODO: for testing
-	  // }
-	  // $('#generate').click(generateGarden);
+	  closeModal.onclick = function () {
+	    return modal.style.display = 'none';
+	  };
+	  aboutButton.onclick = function () {
+	    return modal.style.display = 'block';
+	  };
 	});
 	
 	window.grid = Grid;
@@ -167,7 +181,7 @@
 	  }, {
 	    key: 'checkTarget',
 	    value: function checkTarget() {
-	      return this.player.circle.position.x > 515 && this.player.circle.position.x < 533 && this.player.circle.position.y < 580 && this.player.circle.position.y > 550;
+	      return this.player.circle.position.x > 515 && this.player.circle.position.x < 550 && this.player.circle.position.y < 590 && this.player.circle.position.y > 550;
 	    }
 	  }, {
 	    key: 'fallingFinish',
@@ -429,7 +443,7 @@
 	          // TODO: bring this back
 	          // westmost wall
 	
-	          top.push(_main.Bodies.rectangle(0, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
+	          top.push(_main.Bodies.rectangle(1, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
 	            render: {
 	              fillStyle: randomColor(),
 	              strokeStyle: randomColor(),
@@ -439,7 +453,7 @@
 	          }));
 	
 	          // northmost wall
-	          bottom.push(_main.Bodies.rectangle(j * 32 + 18, 32, 31, 2, { isStatic: true,
+	          bottom.push(_main.Bodies.rectangle(j * 32 + 19, 32, 31, 2, { isStatic: true,
 	            render: {
 	              fillStyle: randomColor(),
 	              strokeStyle: randomColor(),
@@ -449,7 +463,7 @@
 	          }));
 	
 	          if (!cell.isLinked(cell.east)) {
-	            top.push(_main.Bodies.rectangle((j + 1) * 32, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
+	            top.push(_main.Bodies.rectangle((j + 1) * 32 + 1, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
 	              render: {
 	                fillStyle: randomColor(),
 	                strokeStyle: randomColor(),
@@ -461,7 +475,7 @@
 	
 	          if (!cell.isLinked(cell.south)) {
 	            // bottom.push(new Wall(false, false, [(j) * 32, (i + 2) * 32]));
-	            bottom.push(_main.Bodies.rectangle(j * 32 + 18, (i + 2) * 32, 31, 2, { isStatic: true,
+	            bottom.push(_main.Bodies.rectangle(j * 32 + 19, (i + 2) * 32, 31, 2, { isStatic: true,
 	              render: {
 	                fillStyle: randomColor(),
 	                strokeStyle: randomColor(),

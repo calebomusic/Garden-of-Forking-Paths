@@ -4,19 +4,33 @@
     <meta charset="utf-8">
     <title>GOFP</title>
     <script src="vendor/keymaster.js"></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="bundle.js"></script>
     <link rel="stylesheet" type="text/css" href="styles/application.css" media="screen" />
     <link href="https://fonts.googleapis.com/css?family=Dosis" rel="stylesheet">
   </head>
   <body>
+
     <div class='gofp'>
       <div class='header'>
+        <button id='about'>about</button>
         <h1>GOFP</h1>
-        <button id='generate'>Generate Garden</button>
+        <button id='generate'>generate</button>
       </div>
       <canvas></canvas>
-      <div id='stage'><div>
+      <div id='stage'></div>
+      <div class='footer'>
+        <a href="https://github.com/calebomusic/">Github</a>
+        <p></p>
+        <a href="https://www.linkedin.com/in/caleb-ontiveros-1a23a510a">LinkedIn</a>
+      </div>
+    </div>
+    <div id='modal' class='modal'><div>
+      <div class='modal-content'>
+        <div class='modal-header'>
+          <span id='close'>x</span>
+        </div>
+        <p>GOFP GOFP GOFP</p>
+      </div>
     </div>
   </body>
 </html>

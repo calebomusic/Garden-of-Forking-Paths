@@ -74,7 +74,8 @@
 	    canvas: canvasEl,
 	    engine: engine,
 	    options: {
-	      wireframes: false
+	      wireframes: false,
+	      background: ''
 	    }
 	  });
 	
@@ -105,6 +106,8 @@
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
+	var _main = __webpack_require__(13);
+	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var Maze = __webpack_require__(2);
@@ -120,10 +123,23 @@
 	    this.maze = new Maze(17, 17, engine, world);
 	    this.maze.growingTree();
 	    this.player = new Player(engine, world);
-	    this.target = new Target();
+	    this.target = _main.Bodies.rectangle(530, 560, 10, 10);
+	
+	    _main.World.add(this.engine.world, [this.target]);
 	  }
 	
 	  _createClass(Game, [{
+	    key: 'build',
+	    value: function build() {
+	      console.log('building');
+	
+	      this.engine.world.gravity.y = 0;
+	
+	      this.engine.world.bodies.forEach(function (body) {
+	        return _main.Body.setStatic(body, true);
+	      });
+	    }
+	  }, {
 	    key: 'draw',
 	    value: function draw(ctx) {
 	      this.maze.grid.draw(ctx);
@@ -133,8 +149,31 @@
 	  }, {
 	    key: 'step',
 	    value: function step(timeDelta) {
+	      var _this = this;
+	
+	      if (this.checkTarget()) {
+	        this.engine.world.gravity.y = 1;
+	        setTimeout(function () {
+	          return _this.fallingFinish();
+	        }, 1000);
+	      }
 	      this.movePlayer(timeDelta);
 	      this.checkCollisions();
+	    }
+	  }, {
+	    key: 'checkTarget',
+	    value: function checkTarget() {
+	      return this.player.circle.position.x > 515 && this.player.circle.position.x < 533 && this.player.circle.position.y < 580 && this.player.circle.position.y > 550;
+	    }
+	  }, {
+	    key: 'fallingFinish',
+	    value: function fallingFinish() {
+	      this.engine.world.bodies.forEach(function (body) {
+	        if (body.mass !== 17) {
+	          _main.Body.setStatic(body, false);
+	          body.angle = Math.random();
+	        }
+	      });
 	    }
 	  }, {
 	    key: 'movePlayer',
@@ -385,12 +424,14 @@
 	
 	          // TODO: bring this back
 	          // westmost wall
+	
 	          top.push(_main.Bodies.rectangle(0, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
 	            render: {
 	              fillStyle: randomColor(),
 	              strokeStyle: randomColor(),
 	              lineWidth: 2
-	            }
+	            },
+	            mass: 20
 	          }));
 	
 	          // northmost wall
@@ -399,18 +440,18 @@
 	              fillStyle: randomColor(),
 	              strokeStyle: randomColor(),
 	              lineWidth: 2
-	            }
+	            },
+	            mass: 3
 	          }));
-	          // bottom.push(new Wall(false, false, [(j) * 32, 32]));
 	
 	          if (!cell.isLinked(cell.east)) {
-	            // top.push(new Wall(false, true, [(j + 1) * 32, (i + 1) * 32]));
 	            top.push(_main.Bodies.rectangle((j + 1) * 32, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
 	              render: {
 	                fillStyle: randomColor(),
 	                strokeStyle: randomColor(),
 	                lineWidth: 2
-	              }
+	              },
+	              mass: 1000
 	            }));
 	          }
 	
@@ -421,7 +462,8 @@
 	                fillStyle: randomColor(),
 	                strokeStyle: randomColor(),
 	                lineWidth: 2
-	              }
+	              },
+	              mass: 17
 	            }));
 	          }
 	        });
@@ -17833,7 +17875,8 @@
 	      return _this.color = randomColor();
 	    }, 5000);
 	
-	    this.circle = _main.Bodies.circle(35, 100, 7, { frictionAir: 0 });
+	    // this.circle = Bodies.circle(35, 100 , 7, {frictionAir: 0})
+	    this.circle = _main.Bodies.circle(520, 540, 7, { frictionAir: 0 });
 	
 	    _main.World.add(engine.world, this.circle);
 	  }
@@ -17856,7 +17899,6 @@
 	      // this.circle.angle = impulse[1];
 	      // this.circle.angularSpeed = impulse[1];
 	      // this.circle.speed = impulse[0];
-	      console.log(this.circle);
 	    }
 	  }, {
 	    key: 'move',

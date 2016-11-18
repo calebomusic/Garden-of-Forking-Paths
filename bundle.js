@@ -131,7 +131,7 @@
 	    this.engine = engine;
 	    this.world = world;
 	    this.maze = new Maze(17, 17, engine, world);
-	    this.maze.growingTree();
+	    this.maze.recursiveBacktracker();
 	    this.player = new Player(engine, world);
 	    this.target = _main.Bodies.rectangle(707, 560, 10, 10);
 	
@@ -139,17 +139,6 @@
 	  }
 	
 	  _createClass(Game, [{
-	    key: 'build',
-	    value: function build() {
-	      console.log('building');
-	
-	      this.engine.world.gravity.y = 0;
-	
-	      this.engine.world.bodies.forEach(function (body) {
-	        return _main.Body.setStatic(body, true);
-	      });
-	    }
-	  }, {
 	    key: 'step',
 	    value: function step(timeDelta) {
 	      var _this = this;
@@ -226,8 +215,8 @@
 	  }
 	
 	  _createClass(Maze, [{
-	    key: 'growingTree',
-	    value: function growingTree() {
+	    key: 'recursiveBacktracker',
+	    value: function recursiveBacktracker() {
 	      var cells = [];
 	      var visited = [];
 	
@@ -243,7 +232,7 @@
 	            x = _currentPos[0],
 	            y = _currentPos[1];
 	
-	        var newPos = this.growingTreeStep(currentPos, visited);
+	        var newPos = this.recursiveBacktrackerStep(currentPos, visited);
 	
 	        if (newPos) {
 	          var _newPos = _slicedToArray(newPos, 2),
@@ -260,8 +249,8 @@
 	      this.grid.configureWalls();
 	    }
 	  }, {
-	    key: 'growingTreeStep',
-	    value: function growingTreeStep(currentPos, visited) {
+	    key: 'recursiveBacktrackerStep',
+	    value: function recursiveBacktrackerStep(currentPos, visited) {
 	      var _currentPos2 = _slicedToArray(currentPos, 2),
 	          x = _currentPos2[0],
 	          y = _currentPos2[1];

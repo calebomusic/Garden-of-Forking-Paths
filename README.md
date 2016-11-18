@@ -8,8 +8,8 @@
 This project utilizes object oriented programming and is implemented with the following technologies:
 
 - Vanilla JavaScript for overall structure and game logic.
-- [Keymaster][https://github.com/madrobby/keymaster], a micro-library to manage user key input.
-- [matter-js][http://brm.io/matter-js/] physics engine to handle collisions.
+- [Keymaster](https://github.com/madrobby/keymaster), a micro-library to manage user key input.
+- [matter-js](http://brm.io/matter-js/) physics engine to handle collisions.
 - Webpack to bundle and serve up the various scripts.
 
 In addition to the webpack entry file, there are seven scripts involved in this project:

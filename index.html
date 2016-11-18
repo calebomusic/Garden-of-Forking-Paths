@@ -29,7 +29,21 @@
         <div class='modal-header'>
           <span id='close'>x</span>
         </div>
-        <p>GOFP GOFP GOFP</p>
+        <p>THE GARDEN OF FORKING PATHS</p>
+        <br/>
+        <p>Press 'generate' to build a new maze.
+          Move up with <b>w</b>, down with <b>s</b>, right with <b>d</b>, and left with <b>a</b>.</p>
+        <br/>
+        <p>Every maze is generated with a recursive backtracker algorithm.
+          A random cell is selected as the current cell.
+          From the current cell, a path is made to one of its unvisited neighbors.
+          That neighbor is now the current cell.
+          So, one of its unvisited neighbors is selected and a path is made to that cell from the current cell.
+          This process continues until there are no unvisited neighbors surrounding the current cell.
+          At that point, the algorithm backtracks to the last visited cell searching for unvisited neighbors.
+          If an unvisited neighbor is found the process continues.
+          If no unvisited neighbor is found, the algorithm backtracks to another previously visited cell.
+          When every cell is visited the algorithm is complete and the maze has been generated.
       </div>
     </div>
   </body>

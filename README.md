@@ -26,7 +26,8 @@
 
 This project will be implemented with the following technologies:
 
-- Vanilla JavaScript and `jquery` for overall structure and game logic,
+- Vanilla JavaScript for overall structure and game logic.
+- [matter-js][http://brm.io/matter-js/] physics engine to handle collisions.
 - `HTML5 Canvas` for DOM manipulation and rendering.
 - Webpack to bundle and serve up the various scripts.
 

@@ -72,7 +72,10 @@
 	  var render = _main.Render.create({
 	    element: stage,
 	    canvas: canvasEl,
-	    engine: engine
+	    engine: engine,
+	    options: {
+	      wireframes: false
+	    }
 	  });
 	
 	  _main.Render.run(render);
@@ -114,7 +117,7 @@
 	
 	    this.engine = engine;
 	    this.world = world;
-	    this.maze = new Maze(15, 15, engine, world);
+	    this.maze = new Maze(17, 17, engine, world);
 	    this.maze.growingTree();
 	    this.player = new Player(engine, world);
 	    this.target = new Target();
@@ -304,6 +307,17 @@
 	var Cell = __webpack_require__(4);
 	var Wall = __webpack_require__(7);
 	
+	function randomColor() {
+	  var hexDigits = "0123456789ABCDEF";
+	
+	  var color = "#";
+	  for (var i = 0; i < 3; i++) {
+	    color += hexDigits[Math.floor(Math.random() * 16)];
+	  }
+	
+	  return color;
+	}
+	
 	var Grid = function () {
 	  function Grid(rows, cols, engine, world) {
 	    _classCallCheck(this, Grid);
@@ -371,20 +385,44 @@
 	
 	          // TODO: bring this back
 	          // westmost wall
-	          top.push(_main.Bodies.rectangle(0, (i + 1) * 32 + 17, 2, 32, { isStatic: true }));
+	          top.push(_main.Bodies.rectangle(0, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
+	            render: {
+	              fillStyle: randomColor(),
+	              strokeStyle: randomColor(),
+	              lineWidth: 2
+	            }
+	          }));
 	
 	          // northmost wall
-	          bottom.push(_main.Bodies.rectangle(j * 32 + 18, 32, 32, 2, { isStatic: true }));
+	          bottom.push(_main.Bodies.rectangle(j * 32 + 18, 32, 31, 2, { isStatic: true,
+	            render: {
+	              fillStyle: randomColor(),
+	              strokeStyle: randomColor(),
+	              lineWidth: 2
+	            }
+	          }));
 	          // bottom.push(new Wall(false, false, [(j) * 32, 32]));
 	
 	          if (!cell.isLinked(cell.east)) {
 	            // top.push(new Wall(false, true, [(j + 1) * 32, (i + 1) * 32]));
-	            top.push(_main.Bodies.rectangle((j + 1) * 32, (i + 1) * 32 + 17, 2, 32, { isStatic: true }));
+	            top.push(_main.Bodies.rectangle((j + 1) * 32, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
+	              render: {
+	                fillStyle: randomColor(),
+	                strokeStyle: randomColor(),
+	                lineWidth: 2
+	              }
+	            }));
 	          }
 	
 	          if (!cell.isLinked(cell.south)) {
 	            // bottom.push(new Wall(false, false, [(j) * 32, (i + 2) * 32]));
-	            bottom.push(_main.Bodies.rectangle(j * 32 + 18, (i + 2) * 32, 32, 2, { isStatic: true }));
+	            bottom.push(_main.Bodies.rectangle(j * 32 + 18, (i + 2) * 32, 31, 2, { isStatic: true,
+	              render: {
+	                fillStyle: randomColor(),
+	                strokeStyle: randomColor(),
+	                lineWidth: 2
+	              }
+	            }));
 	          }
 	        });
 	
@@ -17823,24 +17861,13 @@
 	  }, {
 	    key: 'move',
 	    value: function move(timeDelta) {
-	      // const velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
-	      // offsetX = this.circle.velocity.x * velocityScale,
-	      // offsetY = this.circle.velocity.y * velocityScale;
-	      //
-	      // const newPos = [this.circle.position.x + offsetX, this.circle.position.y + offsetY];
-	      //
-	      // if (this.inBounds(newPos) && !this.collided) {
-	      // [this.circle.position.x, this.circle.position.y]  = newPos;
-	      // } else {
-	      //   // this.vel = [this.vel[0] - offsetX, this.vel[1] - offsetY]
-	      //   this.vel = [-this.vel[0] / 2, -this.vel[1] / 2]
-	      //
-	      //   this.pos = [this.pos[0], this.pos[1]];
-	      //   this.collided = false;
-	      // }
-	      // if (this.game.isOutOfBounds(this.pos)) {
-	      //   this.vel = [0, 0]
-	      // }
+	      var velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
+	          offsetX = this.circle.velocity.x * velocityScale,
+	          offsetY = this.circle.velocity.y * velocityScale;
+	
+	      var newPos = [this.circle.position.x + offsetX, this.circle.position.y + offsetY];
+	
+	      _main.Body.setPosition(this.circle, { x: newPos[0], y: newPos[1] });
 	    }
 	  }, {
 	    key: 'inBounds',

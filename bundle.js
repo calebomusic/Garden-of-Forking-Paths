@@ -53,7 +53,7 @@
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var canvasEl = document.getElementsByTagName("canvas")[0];
-	  canvasEl.width = 546;
+	  canvasEl.width = 800;
 	  canvasEl.height = 600;
 	  var ctx = canvasEl.getContext("2d");
 	
@@ -71,7 +71,7 @@
 	      canvas: canvasEl,
 	      engine: engine,
 	      options: {
-	        width: 546,
+	        width: 900,
 	        wireframes: false,
 	        background: ''
 	      }
@@ -133,7 +133,7 @@
 	    this.maze = new Maze(17, 17, engine, world);
 	    this.maze.growingTree();
 	    this.player = new Player(engine, world);
-	    this.target = _main.Bodies.rectangle(530, 560, 10, 10);
+	    this.target = _main.Bodies.rectangle(707, 560, 10, 10);
 	
 	    _main.World.add(this.engine.world, [this.target]);
 	  }
@@ -165,7 +165,8 @@
 	  }, {
 	    key: 'checkTarget',
 	    value: function checkTarget() {
-	      return this.player.circle.position.x > 515 && this.player.circle.position.x < 550 && this.player.circle.position.y < 590 && this.player.circle.position.y > 550;
+	
+	      return this.player.circle.position.x > 682 && this.player.circle.position.x < 777 && this.player.circle.position.y < 590 && this.player.circle.position.y > 550;
 	    }
 	  }, {
 	    key: 'fallingFinish',
@@ -346,7 +347,6 @@
 	    this.cols = cols;
 	    this.cells = this.prepareGrid();
 	    this.configureCells();
-	    // this.configureWalls();
 	    this.configureWalls = this.configureWalls.bind(this);
 	    this.world = world;
 	    this.engine = engine;
@@ -403,7 +403,7 @@
 	
 	        row.forEach(function (cell, j) {
 	          // westmost wall
-	          top.push(_main.Bodies.rectangle(1, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
+	          top.push(_main.Bodies.rectangle(178, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
 	            render: {
 	              fillStyle: randomColor(),
 	              strokeStyle: randomColor(),
@@ -413,7 +413,7 @@
 	          }));
 	
 	          // northmost wall
-	          bottom.push(_main.Bodies.rectangle(j * 32 + 19, 32, 31, 2, { isStatic: true,
+	          bottom.push(_main.Bodies.rectangle(j * 32 + 196, 32, 31, 2, { isStatic: true,
 	            render: {
 	              fillStyle: randomColor(),
 	              strokeStyle: randomColor(),
@@ -423,7 +423,7 @@
 	          }));
 	
 	          if (!cell.isLinked(cell.east)) {
-	            top.push(_main.Bodies.rectangle((j + 1) * 32 + 1, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
+	            top.push(_main.Bodies.rectangle((j + 1) * 32 + 178, (i + 1) * 32 + 17, 2, 31, { isStatic: true,
 	              render: {
 	                fillStyle: randomColor(),
 	                strokeStyle: randomColor(),
@@ -434,7 +434,7 @@
 	          }
 	
 	          if (!cell.isLinked(cell.south)) {
-	            bottom.push(_main.Bodies.rectangle(j * 32 + 19, (i + 2) * 32, 31, 2, { isStatic: true,
+	            bottom.push(_main.Bodies.rectangle(j * 32 + 196, (i + 2) * 32, 31, 2, { isStatic: true,
 	              render: {
 	                fillStyle: randomColor(),
 	                strokeStyle: randomColor(),
@@ -531,11 +531,6 @@
 	    this.links = {};
 	    this.pos = [];
 	    this.distance = 0;
-	
-	    // this.link.bind(this);
-	    // this.findDir.bind(this);
-	    // this.unlink.bind(this);
-	    // this.isLinked.bind(this);
 	  }
 	
 	  _createClass(Cell, [{
@@ -598,9 +593,6 @@
 	
 	      return false;
 	    }
-	  }, {
-	    key: 'draw',
-	    value: function draw(cell) {}
 	  }, {
 	    key: 'neighbors',
 	    value: function neighbors() {
@@ -17732,8 +17724,6 @@
 
 	"use strict";
 	
-	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 	
 	var _main = __webpack_require__(13);
@@ -17753,43 +17743,25 @@
 	
 	var Player = function () {
 	  function Player(engine, world) {
-	    var _this = this;
-	
 	    _classCallCheck(this, Player);
 	
-	    this.color = randomColor();
-	    // this.pos = [15, 50];
-	    // this.vel = [0, 0];
-	    // this.radius = 7;
-	
-	    setInterval(function () {
-	      return _this.color = randomColor();
-	    }, 5000);
-	
-	    // this.circle = Bodies.circle(35, 100 , 7, {frictionAir: 0})
-	    this.circle = _main.Bodies.circle(520, 540, 7, { frictionAir: 0 });
+	    randomColor();
+	    this.circle = _main.Bodies.circle(195, 50, 7, { frictionAir: 0,
+	      render: {
+	        fillStyle: randomColor(),
+	        strokeStyle: randomColor(),
+	        lineWidth: 2
+	      },
+	      mass: 17
+	    });
 	
 	    _main.World.add(engine.world, this.circle);
 	  }
 	
 	  _createClass(Player, [{
-	    key: "draw",
-	    value: function draw(ctx) {
-	      ctx.fillStyle = this.color;
-	
-	      ctx.beginPath();
-	      ctx.arc(this.pos[0], this.pos[1], this.radius, 0, 2 * Math.PI, true);
-	      ctx.fill();
-	    }
-	  }, {
 	    key: "power",
 	    value: function power(impulse) {
-	      // this.vel[0] += impulse[0];
-	      // this.vel[1] += impulse[1];
 	      _main.Body.setVelocity(this.circle, { x: impulse[0], y: impulse[1] });
-	      // this.circle.angle = impulse[1];
-	      // this.circle.angularSpeed = impulse[1];
-	      // this.circle.speed = impulse[0];
 	    }
 	  }, {
 	    key: "move",
@@ -17801,38 +17773,6 @@
 	      var newPos = [this.circle.position.x + offsetX, this.circle.position.y + offsetY];
 	
 	      _main.Body.setPosition(this.circle, { x: newPos[0], y: newPos[1] });
-	    }
-	  }, {
-	    key: "inBounds",
-	    value: function inBounds(pos) {
-	      var _pos = _slicedToArray(pos, 2),
-	          x = _pos[0],
-	          y = _pos[1];
-	
-	      return x >= 4 && x < 650 && y >= 4 && y <= 700;
-	    }
-	  }, {
-	    key: "isOutOfBounds",
-	    value: function isOutOfBounds() {}
-	  }, {
-	    key: "checkCollision",
-	    value: function checkCollision(wall) {
-	      var startPointDist = Util.dist(wall.startPos, this.pos);
-	      var endPointDist = Util.dist(wall.endPos, this.pos);
-	
-	      var collision = Util.checkCollisionWithLineIntercepts(this, wall.startPos, wall.endPos);
-	
-	      if (collision) {
-	        this.collided = true;
-	        // this.handleCollision();
-	      } else {
-	        return false;
-	      }
-	    }
-	  }, {
-	    key: "handleCollision",
-	    value: function handleCollision() {
-	      this.vel = [0, 0];
 	    }
 	  }]);
 	

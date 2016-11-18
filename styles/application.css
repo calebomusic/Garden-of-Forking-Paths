@@ -52,7 +52,6 @@ body {
   display: flex;
   justify-content: space-around;
   color: white;
-  height: 1000px;
 }
 
 .header h1:hover {

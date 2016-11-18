@@ -273,7 +273,7 @@
   // store previously defined key
   var previousKey = global.key;
 
-  // restore previously defined key and return reference to our key object
+  // restore previously defined key and return reference to our key object.
   function noConflict() {
     var k = global.key;
     global.key = previousKey;

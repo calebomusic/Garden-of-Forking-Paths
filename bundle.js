@@ -57,32 +57,34 @@
 	  canvasEl.height = 600;
 	  var ctx = canvasEl.getContext("2d");
 	
+	  var engine = _main.Engine.create();
+	  var world = _main.World.create();
+	  var render = _main.Render.create({
+	    element: stage,
+	    canvas: canvasEl,
+	    engine: engine,
+	    options: {
+	      width: 900,
+	      wireframes: false,
+	      background: ''
+	    }
+	  });
+	
+	  _main.Render.run(render);
+	  _main.Engine.run(engine);
+	
 	  // Generate Garden
-	  var generateGarden = function generateGarden() {
-	    var engine = _main.Engine.create();
-	    var world = _main.World.create();
+	  var generateGarden = function generateGarden(engine, world) {
+	    _main.Engine.clear(engine);
+	    _main.World.clear(engine.world);
+	    ctx.clearRect(0, 0, 800, 600);
 	
 	    engine.world.gravity.y = 0;
 	
 	    var stage = document.getElementById('stage');
 	
-	    var render = _main.Render.create({
-	      element: stage,
-	      canvas: canvasEl,
-	      engine: engine,
-	      options: {
-	        width: 900,
-	        wireframes: false,
-	        background: ''
-	      }
-	    });
-	
-	    _main.Render.run(render);
-	
 	    var game = new Game(engine, world);
 	    new Stage(game, ctx, engine).start();
-	
-	    _main.Engine.run(engine);
 	  };
 	
 	  // Modal and Buttons
@@ -92,7 +94,7 @@
 	  var closeModal = document.getElementById('close');
 	
 	  generateButton.onclick = function () {
-	    return generateGarden();
+	    return generateGarden(engine, world);
 	  };
 	
 	  window.onclick = function (e) {

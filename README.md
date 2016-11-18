@@ -1,6 +1,8 @@
 ## Garden of Forking Paths
   The garden of forking paths is a maze game made with JavaScript. Unique mazes are generated using a recursive backtracker algorithm.
 
+  [LIVE](https://calebomusic.github.io/garden-of-forking-paths/)
+  
   ![Garden of Forking Paths](https://github.com/calebomusic/garden-of-forking-paths/blob/master/screenshots/finish.png)
 
 ### ARCHITECTURE AND TECHNOLOGIES

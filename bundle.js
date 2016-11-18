@@ -58,10 +58,11 @@
 	
 	document.addEventListener("DOMContentLoaded", function () {
 	  var canvasEl = document.getElementsByTagName("canvas")[0];
-	  canvasEl.width = 900;
-	  canvasEl.height = 950;
+	  canvasEl.width = 800;
+	  canvasEl.height = 600;
 	  var ctx = canvasEl.getContext("2d");
 	
+	  // const generateGarden = () => {
 	  var engine = _main.Engine.create();
 	  var world = _main.World.create();
 	
@@ -74,6 +75,7 @@
 	    canvas: canvasEl,
 	    engine: engine,
 	    options: {
+	      width: 544,
 	      wireframes: false,
 	      background: ''
 	    }
@@ -94,6 +96,8 @@
 	  _main.Engine.run(engine);
 	
 	  //TODO: for testing
+	  // }
+	  // $('#generate').click(generateGarden);
 	});
 	
 	window.grid = Grid;
@@ -18037,15 +18041,6 @@
 	  "s": [0, 1],
 	  "d": [1, 0]
 	};
-	
-	// angle, velocity
-	
-	// const MOVES = {
-	//   "w": [ 0.1, 0],
-	//    "a": [0.1,  .5],
-	//    "s": [ 0.1, -.5 ],
-	//    "d": [ 0.1,  -1]
-	// }
 	
 	var Stage = function () {
 	  function Stage(game, ctx, engine) {

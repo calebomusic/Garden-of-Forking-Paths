@@ -7,7 +7,7 @@ html, body, header, nav, h1, h2, h4, h5, a, ul, li, div, form, p, input, button,
  outline: 0;
 
  font: inherit;
- font-family: 'Roboto', sans-serif;
+ font-family: 'Dosis', sans-serif;
  color: inherit;
  text-align: inherit;
  text-decoration: inherit;
@@ -34,13 +34,50 @@ body {
 
 /* GOFP */
 .gofp {
+  padding-top: 50px;
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-direction: column;
 }
 
-.gofp h1 {
+.header h1 {
   font-size: 24px;
   color: white;
-  margin-right: 10px;
+}
+
+.header {
+  text-align: center;
+  vertical-align: center;
+}
+
+button {
+  color: white;
+  border: 1px solid;
+  border-color: -moz-linear-gradient( top ,
+      rgba(255, 0, 0, 1) 0%,
+      rgba(255, 255, 0, 1) 15%,
+      rgba(0, 255, 0, 1) 30%,
+      rgba(0, 255, 255, 1) 50%,
+      rgba(0, 0, 255, 1) 65%,
+      rgba(255, 0, 255, 1) 80%,
+      rgba(255, 0, 0, 1) 100%);
+  /*background: -webkit-gradient(linear,  left top,  left bottom,
+      color-stop(0%, rgba(255, 0, 0, 1)),
+      color-stop(15%, rgba(255, 255, 0, 1)),
+      color-stop(30%, rgba(0, 255, 0, 1)),
+      color-stop(50%, rgba(0, 255, 255, 1)),
+      color-stop(65%, rgba(0, 0, 255, 1)),
+      color-stop(80%, rgba(255, 0, 255, 1)),
+      color-stop(100%, rgba(255, 0, 0, 1)));*/
+  cursor: pointer;
+}
+
+button:hover {
+  border: 2px solid;
+}
+
+canvas {
+  width: 800;
+  height: 600;
 }

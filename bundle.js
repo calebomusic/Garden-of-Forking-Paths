@@ -65,8 +65,9 @@
 	  var engine = _main.Engine.create();
 	  var world = _main.World.create();
 	
+	  engine.world.gravity.y = 0;
+	
 	  var stage = document.getElementById('stage');
-	  console.log(stage);
 	
 	  var render = _main.Render.create({
 	    element: stage,
@@ -115,7 +116,7 @@
 	    this.world = world;
 	    this.maze = new Maze(15, 15, engine, world);
 	    this.maze.growingTree();
-	    this.player = new Player();
+	    this.player = new Player(engine, world);
 	    this.target = new Target();
 	  }
 	
@@ -361,8 +362,6 @@
 	    value: function configureWalls() {
 	      var walls = [];
 	
-	      // this.toString();
-	
 	      this.cells.forEach(function (row, i) {
 	        var top = [];
 	        var bottom = [];
@@ -395,7 +394,6 @@
 	
 	      this.walls = walls;
 	      if (this.walls.length > 0 && this.engine.world) {
-	        this.toString();
 	        var flattenedWalls = this.walls.reduce(function (a, b) {
 	          return a.concat(b);
 	        });
@@ -17759,11 +17757,13 @@
 /* 8 */
 /***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 	
 	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
 	
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+	
+	var _main = __webpack_require__(13);
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
@@ -17781,23 +17781,27 @@
 	}
 	
 	var Player = function () {
-	  function Player() {
+	  function Player(engine, world) {
 	    var _this = this;
 	
 	    _classCallCheck(this, Player);
 	
 	    this.color = randomColor();
-	    this.pos = [15, 50];
-	    this.vel = [0, 0];
-	    this.radius = 7;
+	    // this.pos = [15, 50];
+	    // this.vel = [0, 0];
+	    // this.radius = 7;
 	
 	    setInterval(function () {
 	      return _this.color = randomColor();
 	    }, 5000);
+	
+	    this.circle = _main.Bodies.circle(35, 100, 7, { frictionAir: 0 });
+	
+	    _main.World.add(engine.world, this.circle);
 	  }
 	
 	  _createClass(Player, [{
-	    key: "draw",
+	    key: 'draw',
 	    value: function draw(ctx) {
 	      ctx.fillStyle = this.color;
 	
@@ -17806,36 +17810,40 @@
 	      ctx.fill();
 	    }
 	  }, {
-	    key: "power",
+	    key: 'power',
 	    value: function power(impulse) {
-	      this.vel[0] += impulse[0];
-	      this.vel[1] += impulse[1];
+	      // this.vel[0] += impulse[0];
+	      // this.vel[1] += impulse[1];
+	      _main.Body.setVelocity(this.circle, { x: impulse[0], y: impulse[1] });
+	      // this.circle.angle = impulse[1];
+	      // this.circle.angularSpeed = impulse[1];
+	      // this.circle.speed = impulse[0];
+	      console.log(this.circle);
 	    }
 	  }, {
-	    key: "move",
+	    key: 'move',
 	    value: function move(timeDelta) {
-	      var velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
-	          offsetX = this.vel[0] * velocityScale,
-	          offsetY = this.vel[1] * velocityScale;
-	
-	      var newPos = [this.pos[0] + offsetX, this.pos[1] + offsetY];
-	
-	      if (this.inBounds(newPos) && !this.collided) {
-	        this.pos = newPos;
-	      } else {
-	        // this.vel = [this.vel[0] - offsetX, this.vel[1] - offsetY]
-	        this.vel = [-this.vel[0] / 2, -this.vel[1] / 2];
-	
-	        this.pos = [this.pos[0], this.pos[1]];
-	        this.collided = false;
-	      }
-	
+	      // const velocityScale = timeDelta / NORMAL_FRAME_TIME_DELTA,
+	      // offsetX = this.circle.velocity.x * velocityScale,
+	      // offsetY = this.circle.velocity.y * velocityScale;
+	      //
+	      // const newPos = [this.circle.position.x + offsetX, this.circle.position.y + offsetY];
+	      //
+	      // if (this.inBounds(newPos) && !this.collided) {
+	      // [this.circle.position.x, this.circle.position.y]  = newPos;
+	      // } else {
+	      //   // this.vel = [this.vel[0] - offsetX, this.vel[1] - offsetY]
+	      //   this.vel = [-this.vel[0] / 2, -this.vel[1] / 2]
+	      //
+	      //   this.pos = [this.pos[0], this.pos[1]];
+	      //   this.collided = false;
+	      // }
 	      // if (this.game.isOutOfBounds(this.pos)) {
 	      //   this.vel = [0, 0]
 	      // }
 	    }
 	  }, {
-	    key: "inBounds",
+	    key: 'inBounds',
 	    value: function inBounds(pos) {
 	      var _pos = _slicedToArray(pos, 2),
 	          x = _pos[0],
@@ -17844,10 +17852,10 @@
 	      return x >= 4 && x < 650 && y >= 4 && y <= 700;
 	    }
 	  }, {
-	    key: "isOutOfBounds",
+	    key: 'isOutOfBounds',
 	    value: function isOutOfBounds() {}
 	  }, {
-	    key: "checkCollision",
+	    key: 'checkCollision',
 	    value: function checkCollision(wall) {
 	      var startPointDist = Util.dist(wall.startPos, this.pos);
 	      var endPointDist = Util.dist(wall.endPos, this.pos);
@@ -17862,7 +17870,7 @@
 	      }
 	    }
 	  }, {
-	    key: "handleCollision",
+	    key: 'handleCollision',
 	    value: function handleCollision() {
 	      this.vel = [0, 0];
 	    }
@@ -17955,17 +17963,27 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	var MOVES = {
-	  "w": [0, -.5],
-	  "a": [-.5, 0],
-	  "s": [0, .5],
-	  "d": [.5, 0]
+	  "w": [0, -1],
+	  "a": [-1, 0],
+	  "s": [0, 1],
+	  "d": [1, 0]
 	};
+	
+	// angle, velocity
+	
+	// const MOVES = {
+	//   "w": [ 0.1, 0],
+	//    "a": [0.1,  .5],
+	//    "s": [ 0.1, -.5 ],
+	//    "d": [ 0.1,  -1]
+	// }
 	
 	var Stage = function () {
 	  function Stage(game, ctx, engine) {
 	    _classCallCheck(this, Stage);
 	
 	    this.game = game;
+	    this.player = this.game.player;
 	    this.ctx = ctx;
 	    this.engine = engine;
 	  }
@@ -17974,9 +17992,10 @@
 	    key: "bindKeyHandlers",
 	    value: function bindKeyHandlers() {
 	      var player = this.player;
-	      //
+	
 	      Object.keys(MOVES).forEach(function (k) {
 	        var move = MOVES[k];
+	
 	        key(k, function () {
 	          player.power(move);
 	        });

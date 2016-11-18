@@ -1,7 +1,7 @@
 ## Garden of Forking Paths
   The garden of forking paths is a maze game made with JavaScript. Unique mazes are generated using a recursive backtracker algorithm.
 
-  ![Garden of Forking Paths][screenshots/finish.png]
+  ![Garden of Forking Paths][./screenshots/finish.png]
 
 ### ARCHITECTURE AND TECHNOLOGIES
 
@@ -28,7 +28,7 @@ In addition to the webpack entry file, there are seven scripts involved in this 
 
 `garden.js`: creates a game, a stage, a matter-js world and engine, in addition to adding event listeners for the `about` modal and `generate` button.
 
-![Garden of Forking Paths][screenshots/game.png]
+![Garden of Forking Paths][./screenshots/game.png]
 
 ### FUTURE FEATURES
 - [ ] Add music.

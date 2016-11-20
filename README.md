@@ -68,6 +68,9 @@
   const DY = { E: 0, W:  0, N: -1, S: 1 };
   ```
 
+  Example of a generated maze:
+  ![Garden of Forking Paths](https://github.com/calebomusic/garden-of-forking-paths/blob/master/screenshots/game.png)
+  
 ### ARCHITECTURE AND TECHNOLOGIES
 
 This project utilizes object oriented programming and is implemented with the following technologies:
@@ -92,8 +95,6 @@ In addition to the webpack entry file, there are seven scripts involved in this 
 `stage.js`: Houses the animation logic and binds key handlers.
 
 `garden.js`: creates a game, a stage, a matter-js world and engine, in addition to adding event listeners for the `about` modal and `generate` button.
-
-![Garden of Forking Paths](https://github.com/calebomusic/garden-of-forking-paths/blob/master/screenshots/game.png)
 
 ### FUTURE FEATURES
 - [ ] Add music.

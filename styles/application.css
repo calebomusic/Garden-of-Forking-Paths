@@ -40,6 +40,7 @@ body {
   flex-direction: column;
   height: 600;
   transition: all .2s;
+  overflow: hidden;
 }
 
 .header h1 {
@@ -120,6 +121,8 @@ canvas {
     border: 1px solid #888;
     width: 50%;
     height: 300px;
+    text-align: center;
+    overflow: scroll;
 }
 
 .modal-header {

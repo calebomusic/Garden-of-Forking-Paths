@@ -84,6 +84,10 @@
 	    entranceOpenModal = window.setTimeout(function () {
 	      modal.style.display = 'block';
 	    }, 5000);
+	
+	    $('body').one('click', function () {
+	      return generateGarden(engine, world);
+	    });
 	  };
 	
 	  // Generate Garden

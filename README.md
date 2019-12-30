@@ -70,13 +70,12 @@
 
   Example of a generated maze:
   ![Garden of Forking Paths](https://github.com/calebomusic/garden-of-forking-paths/blob/master/screenshots/game.png)
-  
+
 ### ARCHITECTURE AND TECHNOLOGIES
 
 This project utilizes object oriented programming and is implemented with the following technologies:
 
 - Vanilla JavaScript for overall structure and game logic.
-- [Keymaster](https://github.com/madrobby/keymaster), a micro-library to manage user key input.
 - [matter-js](http://brm.io/matter-js/) physics engine to handle collisions.
 - Webpack to bundle and serve up the various scripts.
 

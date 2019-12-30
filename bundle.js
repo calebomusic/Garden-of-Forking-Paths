@@ -52,6 +52,7 @@
 	var Stage = __webpack_require__(40);
 	
 	document.addEventListener("DOMContentLoaded", function () {
+	  var game = void 0;
 	  // Prepare canvas
 	  var canvasEl = document.getElementsByTagName("canvas")[0];
 	  canvasEl.width = 800;
@@ -79,6 +80,7 @@
 	  var entranceExplosion = void 0,
 	      entranceOpenModal = void 0;
 	  var generateExplodeAndOpenModalOnEntrance = function generateExplodeAndOpenModalOnEntrance(engine, world) {
+	    game = null;
 	    var game = generateGarden(engine, world);
 	    entranceExplosion = window.setTimeout(game.fallingFinish, 2000);
 	    entranceOpenModal = window.setTimeout(function () {
@@ -10404,6 +10406,7 @@
 	  }, {
 	    key: 'fallingFinish',
 	    value: function fallingFinish() {
+	      debugger;
 	      this.engine.world.bodies.forEach(function (body) {
 	        if (body.mass !== 17) {
 	          _main.Body.setStatic(body, false);
@@ -27962,11 +27965,11 @@
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 	
 	function randomColor() {
-	  var hexDigits = "0123456789ABCDEF";
+	  var hexDigits = "123456789ABCDEF";
 	
 	  var color = "#";
 	  for (var i = 0; i < 3; i++) {
-	    color += hexDigits[Math.floor(Math.random() * 16)];
+	    color += hexDigits[Math.floor(Math.random() * 15)];
 	  }
 	
 	  return color;
